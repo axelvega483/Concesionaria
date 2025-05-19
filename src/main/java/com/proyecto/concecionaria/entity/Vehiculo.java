@@ -22,6 +22,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -81,9 +82,9 @@ public class Vehiculo implements Serializable {
 
     @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<DetalleVenta> detalleVentas;
+    private List<DetalleVenta> detalleVentas = new ArrayList<>();
     
     @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<DetalleCompra> detalleCompras;
+    private List<DetalleCompra> detalleCompras = new ArrayList<>();
 }

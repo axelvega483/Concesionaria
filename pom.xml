@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.proyecto</groupId>
-	<artifactId>concecionaria</artifactId>
+	<artifactId>concesionaria</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>concecionaria</name>
+	<name>concesionaria</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>

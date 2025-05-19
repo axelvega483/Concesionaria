@@ -18,6 +18,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -51,7 +52,7 @@ public class Venta implements Serializable {
     @Size(min = 1, message = "Debe haber al menos un producto en la venta")
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("venta")
-    private List<DetalleVenta> detalleVentas;
+    private List<DetalleVenta> detalleVentasnew = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
@@ -64,6 +65,12 @@ public class Venta implements Serializable {
     @JsonIgnoreProperties("ventas")
     @NotNull(message = "La venta debe estar registrada por un empleado")
     private Usuario empleado;
+    
+    @NotNull(message = "Debe incluir al menos un pago de venta")
+    @Size(min = 1, message = "Debe haber al menos un pago en la venta")
+    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("venta")
+    private List<Pagos> pagos = new ArrayList<>();
 
     @Column(nullable = false)
     private Boolean activo = true;
