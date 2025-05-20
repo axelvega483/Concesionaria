@@ -2,9 +2,12 @@ package com.proyecto.concecionaria.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.proyecto.concecionaria.util.FrecuenciaPago;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -48,6 +51,11 @@ public class Venta implements Serializable {
     @Column(nullable = false)
     private Double total;
 
+    @NotNull(message = "La frecuencia de pago no puede estar vacío")
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private FrecuenciaPago frecuenciaPago;
+
     @NotNull(message = "Debe incluir al menos un detalle de venta")
     @Size(min = 1, message = "Debe haber al menos un producto en la venta")
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -65,7 +73,7 @@ public class Venta implements Serializable {
     @JsonIgnoreProperties("ventas")
     @NotNull(message = "La venta debe estar registrada por un empleado")
     private Usuario empleado;
-    
+
     @NotNull(message = "Debe incluir al menos un pago de venta")
     @Size(min = 1, message = "Debe haber al menos un pago en la venta")
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

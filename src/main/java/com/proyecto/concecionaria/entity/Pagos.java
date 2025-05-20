@@ -45,16 +45,13 @@ public class Pagos implements Serializable {
     @Column(nullable = false)
     private BigDecimal monto;
 
-    @Column(nullable = false)
-    private String estado;
-
     @ManyToOne
     @JoinColumn(name = "venta_id", nullable = false)
     @JsonIgnoreProperties("pagos")
     @NotNull(message = "Los pagos debe estar registrada en una venta")
     private Venta venta;
-    
+
     @Column(nullable = false)
-    private boolean activo;
+    private Boolean activo = true;
 
 }
