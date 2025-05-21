@@ -37,4 +37,7 @@ public class UsuarioService implements UsuarioInterfaz {
         });
     }
 
+    public Boolean existe(String dni) {
+        return repo.findByDniAndActivo(dni).isPresent();
+    }
 }

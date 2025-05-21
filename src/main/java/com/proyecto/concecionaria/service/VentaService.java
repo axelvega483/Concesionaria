@@ -37,4 +37,7 @@ public class VentaService implements VentaInterfaz {
         });
     }
 
+    public List<Venta> obtenerById(List<Integer> id) {
+        return repo.findAllById(id);
+    }
 }

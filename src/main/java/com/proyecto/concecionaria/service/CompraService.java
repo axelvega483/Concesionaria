@@ -37,4 +37,7 @@ public class CompraService implements CompraInterfaz {
         });
     }
 
+    public List<Compra> obtenerById(List<Integer> id) {
+        return repo.findAllById(id);
+    }
 }
