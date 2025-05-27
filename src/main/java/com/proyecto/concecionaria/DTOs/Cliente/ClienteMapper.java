@@ -15,10 +15,12 @@ public class ClienteMapper {
         dto.setEmail(cliente.getEmail());
         dto.setNombre(cliente.getNombre());
 
-        List<ClienteVentaDTO> venta = Optional.ofNullable(cliente.getVentas()).orElse(Collections.emptyList())
-                .stream().map(ventas -> new ClienteVentaDTO(
-                ventas.getId(), ventas.getFecha(), ventas.getTotal())).toList();
-        dto.setVentas(venta);
+        List<ClienteVentaDTO> ventas = Optional.ofNullable(cliente.getVentas()).orElse(Collections.emptyList())
+                .stream().map(venta -> new ClienteVentaDTO(
+                venta.getId(),
+                venta.getFecha(),
+                venta.getTotal())).toList();
+        dto.setVentas(ventas);
         return dto;
     }
 }

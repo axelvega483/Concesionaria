@@ -43,6 +43,7 @@ public class DetalleVenta implements Serializable {
     @Min(value = 1, message = "La cantidad debe ser al menos 1")
     @Column(nullable = false)
     private Integer cantidad;
+    
     @NotNull(message = "El precio unitario no puede ser nulo")
     @DecimalMin(value = "0.01", inclusive = true, message = "El precio unitario debe ser mayor a 0")
     @Column(nullable = false)

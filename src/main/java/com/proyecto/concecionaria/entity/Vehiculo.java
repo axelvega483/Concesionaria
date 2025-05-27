@@ -75,7 +75,8 @@ public class Vehiculo implements Serializable {
 
     private Integer kilometraje;
 
-    private String imagenUrl;
+    @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Imagen> imagenes = new ArrayList<>();
 
     @Column(nullable = false)
     private Boolean activo = true;
@@ -83,5 +84,9 @@ public class Vehiculo implements Serializable {
     @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<DetalleVenta> detalleVentas = new ArrayList<>();
-    
+
+    public void addImagen(Imagen imagen) {
+        imagen.setVehiculo(this);
+        this.imagenes.add(imagen);
+    }
 }

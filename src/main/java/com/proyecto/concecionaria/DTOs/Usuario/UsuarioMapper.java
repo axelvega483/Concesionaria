@@ -17,13 +17,13 @@ public class UsuarioMapper {
         dto.setId(usuario.getId());
         dto.setActivo(usuario.getActivo());
 
-        List<UsuarioVentaDTO> venta = Optional.ofNullable(usuario.getVentas()).orElse(Collections.emptyList())
-                .stream().map(ventas -> new UsuarioVentaDTO(
-                ventas.getId(),
-                ventas.getFecha(),
-                ventas.getTotal())).collect(Collectors.toList());
+        List<UsuarioVentaDTO> ventas = Optional.ofNullable(usuario.getVentas()).orElse(Collections.emptyList())
+                .stream().map(venta -> new UsuarioVentaDTO(
+                venta.getId(),
+                venta.getFecha(),
+                venta.getTotal())).collect(Collectors.toList());
 
-        dto.setVentas(venta);
+        dto.setVentas(ventas);
 
         return dto;
     }

@@ -37,7 +37,10 @@ public class VehiculoService implements VehiculoInterfaz {
             vehiculo.setActivo(Boolean.FALSE);
             repo.save(vehiculo);
         }
+    }
 
+    public Boolean existe(String marca, String modelo, Integer anioModelo) {
+        return repo.findByMarcaModeloAnioModelo(marca, modelo, anioModelo).isPresent();
     }
 
 }
