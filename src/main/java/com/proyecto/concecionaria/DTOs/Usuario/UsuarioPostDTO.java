@@ -35,6 +35,4 @@ public class UsuarioPostDTO {
     @NotNull
     private List<Integer> ventasId;
 
-    @NotNull
-    private List<Integer> comprasId;
 }

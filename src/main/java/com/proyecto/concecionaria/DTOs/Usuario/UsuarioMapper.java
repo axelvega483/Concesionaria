@@ -17,13 +17,6 @@ public class UsuarioMapper {
         dto.setId(usuario.getId());
         dto.setActivo(usuario.getActivo());
 
-        List<UsuarioCompraDTO> compra = Optional.ofNullable(usuario.getCompras()).orElse(Collections.emptyList())
-                .stream().map(compras -> new UsuarioCompraDTO(
-                compras.getId(),
-                compras.getFecha(),
-                compras.getTotal())).collect(Collectors.toList());
-        dto.setCompras(compra);
-
         List<UsuarioVentaDTO> venta = Optional.ofNullable(usuario.getVentas()).orElse(Collections.emptyList())
                 .stream().map(ventas -> new UsuarioVentaDTO(
                 ventas.getId(),

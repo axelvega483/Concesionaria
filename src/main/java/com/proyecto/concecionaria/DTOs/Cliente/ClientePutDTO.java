@@ -1,13 +1,12 @@
-package com.proyecto.concecionaria.DTOs.Usuario;
+package com.proyecto.concecionaria.DTOs.Cliente;
 
-import com.proyecto.concecionaria.util.RolEmpleado;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class UsuarioGetDTO {
+public class ClientePutDTO {
 
     private Integer id;
 
@@ -17,10 +16,8 @@ public class UsuarioGetDTO {
 
     private String dni;
 
-    private RolEmpleado rol;
-
     private Boolean activo;
 
-    private List<UsuarioVentaDTO> ventas;
+    private List<Integer> ventasId;
 
 }

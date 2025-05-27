@@ -37,4 +37,7 @@ public class ClienteService implements ClienteInterfaz {
         });
     }
 
+    public Boolean existe(String dni) {
+        return repo.findByDniAndActivo(dni).isPresent();
+    }
 }

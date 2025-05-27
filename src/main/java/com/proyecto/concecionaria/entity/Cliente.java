@@ -59,7 +59,4 @@ public class Cliente {
     @JsonIgnore
     private List<Venta> ventas = new ArrayList<>();
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Compra> compras = new ArrayList<>();
 }

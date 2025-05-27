@@ -4,10 +4,8 @@ import com.proyecto.concecionaria.DTOs.Usuario.UsuarioGetDTO;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioMapper;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioPostDTO;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioPutDTO;
-import com.proyecto.concecionaria.entity.Compra;
 import com.proyecto.concecionaria.entity.Usuario;
 import com.proyecto.concecionaria.entity.Venta;
-import com.proyecto.concecionaria.service.CompraService;
 import com.proyecto.concecionaria.service.UsuarioService;
 import com.proyecto.concecionaria.service.VentaService;
 import com.proyecto.concecionaria.util.ApiResponse;
@@ -37,12 +35,9 @@ public class UsuarioController {
     @Autowired
     private VentaService ventaService;
 
-    @Autowired
-    private CompraService compraService;
-
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<?> listar() {
+    public ResponseEntity<?> listarUsuario() {
         try {
             List<UsuarioGetDTO> dto = usuarioService.listar()
                     .stream()
@@ -56,7 +51,7 @@ public class UsuarioController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("{id}")
-    public ResponseEntity<?> obtener(@PathVariable Integer id) {
+    public ResponseEntity<?> obtenerUsuario(@PathVariable Integer id) {
         try {
             Usuario usuario = usuarioService.obtener(id).orElse(null);
             if (usuario != null) {
@@ -81,13 +76,9 @@ public class UsuarioController {
             if (ventas.size() != usuarioDTO.getVentasId().size()) {
                 return new ResponseEntity<>(new ApiResponse<>("Una o más ventas no existen", null, false), HttpStatus.BAD_REQUEST);
             }
-            List<Compra> compras = compraService.obtenerById(usuarioDTO.getComprasId());
-            if (compras.size() != usuarioDTO.getComprasId().size()) {
-                return new ResponseEntity<>(new ApiResponse<>("Una o más compras no existen", null, false), HttpStatus.BAD_REQUEST);
-            }
+
             Usuario usuario = new Usuario();
             usuario.setActivo(Boolean.TRUE);
-            usuario.setCompras(compras);
             usuario.setDni(usuarioDTO.getDni());
             usuario.setEmail(usuarioDTO.getEmail());
             usuario.setNombre(usuarioDTO.getNombre());
@@ -103,7 +94,7 @@ public class UsuarioController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("{id}")
-    public ResponseEntity<?> actualizar(@PathVariable Integer id, @RequestBody UsuarioPutDTO usuarioDTO) {
+    public ResponseEntity<?> actualizarUsuario(@PathVariable Integer id, @RequestBody UsuarioPutDTO usuarioDTO) {
         try {
             Usuario usuario = usuarioService.obtener(id).orElse(null);
             if (usuario != null) {
@@ -111,12 +102,7 @@ public class UsuarioController {
                 if (ventas.size() != usuarioDTO.getVentasId().size()) {
                     return new ResponseEntity<>(new ApiResponse<>("Una o más ventas no existen", null, false), HttpStatus.BAD_REQUEST);
                 }
-                List<Compra> compras = compraService.obtenerById(usuarioDTO.getComprasId());
-                if (compras.size() != usuarioDTO.getComprasId().size()) {
-                    return new ResponseEntity<>(new ApiResponse<>("Una o más compras no existen", null, false), HttpStatus.BAD_REQUEST);
-                }
                 usuario.setActivo(Boolean.TRUE);
-                usuario.setCompras(compras);
                 usuario.setDni(usuarioDTO.getDni());
                 usuario.setEmail(usuarioDTO.getEmail());
                 usuario.setNombre(usuarioDTO.getNombre());
@@ -135,7 +121,7 @@ public class UsuarioController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Integer id
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Integer id
     ) {
         try {
             Usuario usuario = usuarioService.obtener(id).orElse(null);

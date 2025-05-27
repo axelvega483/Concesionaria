@@ -1,4 +1,4 @@
-package com.proyecto.concecionaria.DTOs.Usuario;
+package com.proyecto.concecionaria.DTOs.Cliente;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -10,10 +10,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UsuarioCompraDTO {
+public class ClienteVentaDTO {
 
     private Integer id;
     private LocalDateTime fecha;
     private Double total;
-
 }

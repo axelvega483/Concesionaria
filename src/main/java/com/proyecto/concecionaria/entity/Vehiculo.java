@@ -84,7 +84,4 @@ public class Vehiculo implements Serializable {
     @JsonIgnore
     private List<DetalleVenta> detalleVentas = new ArrayList<>();
     
-    @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<DetalleCompra> detalleCompras = new ArrayList<>();
 }

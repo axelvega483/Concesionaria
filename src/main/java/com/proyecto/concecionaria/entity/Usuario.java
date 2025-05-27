@@ -75,7 +75,4 @@ public class Usuario implements Serializable {
     @JsonIgnore
     private List<Venta> ventas = new ArrayList<>();
 
-    @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Compra> compras = new ArrayList<>();
 }

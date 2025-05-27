@@ -11,7 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UsuarioVentaDTO {
-     private Integer id;
+
+    private Integer id;
     private LocalDateTime fecha;
     private Double total;
 
