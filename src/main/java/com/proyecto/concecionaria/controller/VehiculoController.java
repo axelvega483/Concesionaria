@@ -3,6 +3,7 @@ package com.proyecto.concecionaria.controller;
 import com.proyecto.concecionaria.DTOs.Vehiculo.VehiculoGetDTO;
 import com.proyecto.concecionaria.DTOs.Vehiculo.VehiculoMapper;
 import com.proyecto.concecionaria.DTOs.Vehiculo.VehiculoPostDTO;
+import com.proyecto.concecionaria.DTOs.Vehiculo.VehiculoPutDTO;
 import com.proyecto.concecionaria.entity.DetalleVenta;
 import com.proyecto.concecionaria.entity.Imagen;
 import com.proyecto.concecionaria.entity.Vehiculo;
@@ -34,9 +35,6 @@ public class VehiculoController {
     private VehiculoService vehiculoService;
     @Autowired
     private DetalleVentaService detalleService;
-
-    @Autowired
-    private ImagenService imagenService;
 
     @Value("${app.ruta.imagenes}")
     private String rutaImagenes;
@@ -96,7 +94,7 @@ public class VehiculoController {
         } catch (MalformedURLException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-}
+    }
 
     @PostMapping
     public ResponseEntity<?> crearVehiculo(@Valid @RequestBody VehiculoPostDTO vehiculoDTO) {
@@ -153,11 +151,6 @@ public class VehiculoController {
             if (!Files.exists(directorioPath)) {
                 Files.createDirectories(directorioPath);
             }
-
-            for (Imagen img : vehiculo.getImagenes()) {
-                imagenService.eliminar(img.getId());
-                Files.deleteIfExists(directorioPath.resolve(img.getNombre()));
-            }
             vehiculo.getImagenes().clear();
 
             List<String> extensionesPermitidas = List.of("jpg", "jpeg", "png", "gif");
@@ -177,13 +170,65 @@ public class VehiculoController {
                 imagen.setNombre(nombre);
                 vehiculo.addImagen(imagen);
             }
-
-            vehiculoService.guardar(vehiculo);
-            VehiculoGetDTO dto = VehiculoMapper.toDTO(vehiculo);
+            VehiculoGetDTO dto = VehiculoMapper.toDTO(vehiculoService.guardar(vehiculo));
             return new ResponseEntity<>(new ApiResponse<>("Imágenes subidas correctamente", dto, true), HttpStatus.CREATED);
 
         } catch (IOException e) {
             return new ResponseEntity<>(new ApiResponse<>("Error al subir imágenes: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<?> actualizarVehiculo(@PathVariable Integer id, @RequestBody VehiculoPutDTO vehiculoDTO) {
+        try {
+            Vehiculo vehiculo = vehiculoService.obtener(id).orElse(null);
+            if (vehiculo != null) {
+                vehiculo.setActivo(vehiculoDTO.getActivo());
+                vehiculo.setAnioModelo(vehiculoDTO.getAnioModelo());
+                vehiculo.setColor(vehiculoDTO.getColor());
+                vehiculo.setEstado(vehiculoDTO.getEstado());
+                vehiculo.setKilometraje(vehiculoDTO.getKilometraje());
+                vehiculo.setMarca(vehiculoDTO.getMarca());
+                vehiculo.setModelo(vehiculoDTO.getModelo());
+                vehiculo.setPrecio(vehiculoDTO.getPrecio());
+                vehiculo.setStock(vehiculoDTO.getStock());
+                vehiculo.setTipo(vehiculoDTO.getTipo());
+
+                List<DetalleVenta> detalle = detalleService.obtenerById(vehiculoDTO.getDetalleVentasId());
+                if (detalle.size() != vehiculoDTO.getDetalleVentasId().size()) {
+                    return new ResponseEntity<>(new ApiResponse<>("Una o más detalles no existen", null, false), HttpStatus.BAD_REQUEST);
+                }
+                vehiculo.setDetalleVentas(detalle);
+                List<String> nombresImagenes = Optional.ofNullable(vehiculoDTO.getNombresImagenes()).orElse(Collections.emptyList());
+                for (String nombre : nombresImagenes) {
+                    Imagen imagen = new Imagen();
+                    imagen.setNombre(nombre);
+                    imagen.setActivo(true);
+                    vehiculo.addImagen(imagen);
+                }
+                VehiculoGetDTO dto = VehiculoMapper.toDTO(vehiculoService.guardar(vehiculo));
+                return new ResponseEntity<>(new ApiResponse<>("Vehiculo actualizado con existo", dto, true), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new ApiResponse<>("Vehiculo no encontrado", vehiculoDTO, false), HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> eliminarVehiculo(@PathVariable Integer id) {
+        try {
+            Vehiculo vehiculo = vehiculoService.obtener(id).orElse(null);
+            if (vehiculo != null) {
+                vehiculoService.eliminar(vehiculo.getId());
+                VehiculoGetDTO dto = VehiculoMapper.toDTO(vehiculo);
+                return new ResponseEntity<>(new ApiResponse<>("Vehiculo eliminado con existo", dto, true), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new ApiResponse<>("Vehiculo no encontrado", null, false), HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
