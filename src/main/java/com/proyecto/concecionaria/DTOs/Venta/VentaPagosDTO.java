@@ -1,4 +1,4 @@
-package com.proyecto.concecionaria.DTOs.Usuario;
+package com.proyecto.concecionaria.DTOs.Venta;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,10 +11,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UsuarioVentaDTO {
+public class VentaPagosDTO {
 
     private Integer id;
-    private LocalDateTime fecha;
-    private BigDecimal total;
+    private LocalDateTime fechaPago;
+    private BigDecimal monto;
 
 }

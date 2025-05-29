@@ -2,8 +2,11 @@ package com.proyecto.concecionaria.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.proyecto.concecionaria.util.EstadoPagos;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -51,7 +54,15 @@ public class Pagos implements Serializable {
     @NotNull(message = "Los pagos debe estar registrada en una venta")
     private Venta venta;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false)
+    private EstadoPagos estado;
+
     @Column(nullable = false)
     private Boolean activo = true;
 
+    public void confirmarPago() {
+        this.estado = EstadoPagos.PAGADO;
+        this.venta.actualizarSaldo();
+    }
 }

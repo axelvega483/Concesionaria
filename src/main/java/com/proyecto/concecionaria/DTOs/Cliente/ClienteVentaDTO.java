@@ -1,5 +1,6 @@
 package com.proyecto.concecionaria.DTOs.Cliente;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,5 +15,5 @@ public class ClienteVentaDTO {
 
     private Integer id;
     private LocalDateTime fecha;
-    private Double total;
+    private BigDecimal total;
 }

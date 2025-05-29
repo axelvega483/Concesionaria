@@ -14,6 +14,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,11 +48,11 @@ public class DetalleVenta implements Serializable {
     @NotNull(message = "El precio unitario no puede ser nulo")
     @DecimalMin(value = "0.01", inclusive = true, message = "El precio unitario debe ser mayor a 0")
     @Column(nullable = false)
-    private Double precioUnitario;
+    private BigDecimal precioUnitario;
 
     @ManyToOne
     @JoinColumn(name = "venta_id", nullable = false)
-    @JsonIgnoreProperties("detalleventa")
+    @JsonIgnoreProperties("detalleVentas")
     @NotNull(message = "La venta no puede ser nula")
     private Venta venta;
 }

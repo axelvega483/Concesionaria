@@ -1,6 +1,5 @@
 package com.proyecto.concecionaria.DTOs.Vehiculo;
 
-import com.proyecto.concecionaria.entity.Imagen;
 import com.proyecto.concecionaria.entity.Vehiculo;
 import java.util.Collections;
 import java.util.List;

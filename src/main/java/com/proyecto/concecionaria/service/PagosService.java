@@ -37,4 +37,7 @@ public class PagosService implements PagosInterfaz {
         });
     }
 
+    public List<Pagos> obtenerById(List<Integer> id) {
+        return repo.findAllById(id);
+    }
 }

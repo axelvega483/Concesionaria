@@ -1,5 +1,6 @@
 package com.proyecto.concecionaria.DTOs.Vehiculo;
 
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,6 @@ public class VehiculoVentaDetalleDTO {
 
     private Integer id;
     private Integer cantidad;
-    private Double precioUnitario;
+    private BigDecimal precioUnitario;
 
 }
