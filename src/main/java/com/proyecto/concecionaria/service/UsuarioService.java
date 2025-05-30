@@ -5,17 +5,25 @@ import com.proyecto.concecionaria.interfaz.UsuarioInterfaz;
 import com.proyecto.concecionaria.repository.UsuarioRepository;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
-public class UsuarioService implements UsuarioInterfaz {
+public class UsuarioService implements UsuarioInterfaz, UserDetailsService {
 
-    private final UsuarioRepository repo;
+    @Autowired
+    private UsuarioRepository repo;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public Usuario guardar(Usuario usuario) {
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return repo.save(usuario);
     }
 
@@ -39,5 +47,25 @@ public class UsuarioService implements UsuarioInterfaz {
 
     public Boolean existe(String dni) {
         return repo.findByDniAndActivo(dni).isPresent();
+    }
+
+    public Optional<Usuario> findByCorreo(String email) {
+        return repo.findByCorreo(email);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Usuario usuario = repo.findByCorreo(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
+
+        return new org.springframework.security.core.userdetails.User(
+                usuario.getEmail(),
+                usuario.getPassword(),
+                usuario.getActivo(), // enabled
+                true, // accountNonExpired
+                true, // credentialsNonExpired
+                true, // accountNonLocked
+                List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name()))
+        );
     }
 }
