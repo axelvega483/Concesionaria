@@ -1,81 +1,64 @@
-🚗 Sistema de Gestión para Concesionaria
-Sistema backend para la administración integral de una concesionaria de vehículos. Permite gestionar vehículos, clientes, usuarios (empleados), ventas, pagos y estados asociados. Diseñado para optimizar procesos comerciales y financieros mediante una API REST escalable, segura y fácil de integrar con futuras aplicaciones frontend o móviles.
+# 🚗 Sistema de Gestión para una Concesionaria
 
-🌟 Características del Sistema
-Gestión avanzada de ventas con generación automática de pagos en cuotas o pago único.
+Sistema de backend para la administración integral de una concesionaria de vehículos. Permite gestionar vehículos, clientes, usuarios (empleados), ventas, pagos y estados asociados. Pensado para optimizar y automatizar los procesos comerciales y financieros mediante una API REST robusta, extensible y segura.
 
-Control de estados de ventas y pagos para seguimiento financiero preciso.
+---
 
-Manejo detallado de vehículos y clientes con historial asociado.
+## 🌟 Características del Sistema
 
-Confirmación y anulación de pagos con actualización automática del saldo pendiente.
+- **Gestión avanzada de ventas** con generación automática de pagos (cuotas o pago único).
+- **Control de estados** de ventas y pagos para seguimiento financiero detallado.
+- **Confirmación y anulación de pagos** con actualización automática del saldo pendiente.
+- **Relaciones sólidas entre entidades**: vehículos, clientes, usuarios, ventas y pagos.
+- **Validaciones integradas** en el modelo con mensajes personalizados.
+- **DTOs personalizados** para diferentes vistas y respuestas.
+- **Inicialización automática del usuario administrador** si no existen registros.
 
-Relaciones robustas entre entidades: vehículos, clientes, usuarios, ventas y pagos.
+---
 
-DTOs y mapeadores para respuestas claras y segmentadas.
+## 🛠️ Tecnologías Utilizadas
 
-Validaciones personalizadas en el modelo para integridad de datos.
+### Back-end (API REST)
+- **Java 17**
+- **Spring Boot**
+- **Spring Web**
+- **Spring Data JPA**
+- **Bean Validation (javax.validation)**
+- **Lombok**
+- **MySQL** / PostgreSQL (configurable)
+- **Maven**
 
-🛠️ Tecnologías Utilizadas
-Back-end (API REST)
-Java 17
+---
 
-Spring Boot
+## 📝 Requerimientos Funcionales
 
-Spring Web
+1. **Vehículos**:
+   - Alta, baja, edición y listado de vehículos.
+   - Información detallada: marca, modelo, año, estado, precio.
 
-Spring Data JPA
+2. **Clientes**:
+   - Gestión completa de clientes.
+   - Visualización del historial de compras y pagos realizados.
 
-Bean Validation (javax.validation)
+3. **Usuarios (Empleados)**:
+   - Administración de usuarios con roles (`ADMIN`, `VENDEDOR`).
+   - Creación automática del administrador si no hay registros.
 
-Lombok
+4. **Ventas**:
+   - Registro de ventas con detalle de vehículo y cliente.
+   - Generación automática de pagos asociados.
+   - Actualización de saldo y estado de la venta.
 
-MySQL / PostgreSQL (configurable)
+5. **Pagos**:
+   - Confirmación y anulación de pagos.
+   - Actualización automática del saldo pendiente y estado del pago.
 
-Maven
+---
 
-📝 Requerimientos Funcionales
-Vehículos:
+## ⚙️ Requerimientos No Funcionales
 
-Alta, edición, baja y listado de vehículos.
+- **Validaciones en entidades** con mensajes claros y personalizados.
+- **Seguridad preparada para JWT** (autenticación y autorización).
+- **Modularidad y escalabilidad** para futuras integraciones (web, mobile).
+- **Código limpio y documentado** con principios SOLID y buenas prácticas.
 
-Información detallada: marca, modelo, año, estado, etc.
-
-Clientes:
-
-CRUD completo para clientes.
-
-Visualización del historial de compras y pagos.
-
-Usuarios (Empleados):
-
-Gestión de usuarios con roles definidos (ADMIN, VENDEDOR, etc.).
-
-Seguridad inicial para control de acceso (preparado para JWT).
-
-Ventas:
-
-Registro detallado de ventas con productos asociados.
-
-Generación automática de pagos según modalidad: pago único o cuotas.
-
-Actualización automática del saldo y estado de la venta.
-
-Pagos:
-
-Confirmación y anulación de pagos.
-
-Actualización del saldo pendiente de la venta.
-
-Control de estados (PENDIENTE, PAGADO).
-
-⚙️ Requerimientos No Funcionales
-Validaciones estrictas en las entidades para garantizar integridad.
-
-Manejo de excepciones centralizado para respuestas API claras.
-
-Arquitectura modular para facilitar futuras integraciones y escalabilidad.
-
-Código limpio, mantenible y documentado, siguiendo principios SOLID y buenas prácticas.
-
-Preparado para integración con sistemas de autenticación JWT y microservicios.
