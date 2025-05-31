@@ -27,7 +27,6 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -153,8 +152,7 @@ public class Venta implements Serializable {
     }
 
     public void actualizarSaldo() {
-        LocalDateTime fechaActual = LocalDateTime.now();
-        if (getSaldoRestante().doubleValue() <= 0) {
+        if (getSaldoRestante().compareTo(BigDecimal.ZERO) <= 0) {
             this.estado = EstadoVenta.FINALIZADO;
         } else {
             this.estado = EstadoVenta.ACTIVO;
@@ -163,10 +161,11 @@ public class Venta implements Serializable {
     }
 
     public BigDecimal getSaldoRestante() {
-        Optional<BigDecimal> totalPagado = pagos.stream()
-                .filter((pago) -> pago.getEstado().equals(EstadoPagos.PAGADO))
-                .map((pago) -> pago.getMonto())
-                .reduce(BigDecimal::add);
-        return total.subtract(totalPagado.orElse(BigDecimal.ZERO));
+        return total.subtract(
+                pagos.stream()
+                        .filter(p -> p.getEstado() == EstadoPagos.PAGADO)
+                        .map(Pagos::getMonto)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+        );
     }
 }

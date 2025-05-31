@@ -1,6 +1,5 @@
 package com.proyecto.concecionaria.controller;
 
-import com.proyecto.concecionaria.DTOs.DetallesVenta.DetalleMapper;
 import com.proyecto.concecionaria.DTOs.DetallesVenta.DetalleVentaPostDTO;
 import com.proyecto.concecionaria.DTOs.Venta.VentaGetDTO;
 import com.proyecto.concecionaria.DTOs.Venta.VentaMapper;
@@ -8,19 +7,15 @@ import com.proyecto.concecionaria.DTOs.Venta.VentaPostDTO;
 import com.proyecto.concecionaria.DTOs.Venta.VentaPutDTO;
 import com.proyecto.concecionaria.entity.Cliente;
 import com.proyecto.concecionaria.entity.DetalleVenta;
-import com.proyecto.concecionaria.entity.Pagos;
 import com.proyecto.concecionaria.entity.Usuario;
 import com.proyecto.concecionaria.entity.Vehiculo;
 import com.proyecto.concecionaria.entity.Venta;
 import com.proyecto.concecionaria.service.ClienteService;
-import com.proyecto.concecionaria.service.DetalleVentaService;
-import com.proyecto.concecionaria.service.PagosService;
 import com.proyecto.concecionaria.service.UsuarioService;
 import com.proyecto.concecionaria.service.VehiculoService;
 import com.proyecto.concecionaria.service.VentaService;
 import com.proyecto.concecionaria.util.ApiResponse;
 import jakarta.validation.Valid;
-import java.lang.annotation.Retention;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
