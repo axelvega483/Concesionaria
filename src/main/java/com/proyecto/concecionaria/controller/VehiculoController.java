@@ -8,7 +8,6 @@ import com.proyecto.concecionaria.entity.DetalleVenta;
 import com.proyecto.concecionaria.entity.Imagen;
 import com.proyecto.concecionaria.entity.Vehiculo;
 import com.proyecto.concecionaria.service.DetalleVentaService;
-import com.proyecto.concecionaria.service.ImagenService;
 import com.proyecto.concecionaria.service.VehiculoService;
 import com.proyecto.concecionaria.util.ApiResponse;
 

@@ -2,7 +2,6 @@ package com.proyecto.concecionaria.DTOs.Vehiculo;
 
 import com.proyecto.concecionaria.util.EstadoVehiculo;
 import com.proyecto.concecionaria.util.TipoVehiculo;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
