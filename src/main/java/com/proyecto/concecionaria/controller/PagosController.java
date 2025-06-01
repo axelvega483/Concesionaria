@@ -6,9 +6,17 @@ import com.proyecto.concecionaria.DTOs.Pagos.PagosPutDTO;
 import com.proyecto.concecionaria.entity.Pagos;
 import com.proyecto.concecionaria.service.PagosService;
 import com.proyecto.concecionaria.util.ApiResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,6 +34,8 @@ public class PagosController {
 
     @Autowired
     private PagosService pagosService;
+    @Value("${ruta.pdf}")
+    private String RUTA_PDF;
 
     @GetMapping
     public ResponseEntity<?> listarPagos() {
@@ -75,4 +85,28 @@ public class PagosController {
             return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/ticket/{id}")
+    public ResponseEntity<InputStreamResource> downloadPDF(@PathVariable Integer id) throws FileNotFoundException {
+        Optional<Pagos> optionalPago = pagosService.obtener(id);
+        if (optionalPago.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Pagos pago = optionalPago.get();
+        String fileName = "ticket-pago-" + pago.getId() + ".pdf";
+        String filePath = RUTA_PDF + File.separator + fileName;
+
+        File archivo = new File(filePath);
+        if (!archivo.exists()) {
+            pagosService.generarTicketPago(pago);
+        }
+
+        FileInputStream fileInputStream = new FileInputStream(filePath);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + fileName)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(fileInputStream));
+    }
+
 }
