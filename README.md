@@ -58,7 +58,6 @@ Sistema de backend para la administración integral de una concesionaria de veh�
 ## ⚙️ Requerimientos No Funcionales
 
 - **Validaciones en entidades** con mensajes claros y personalizados.
-- **Seguridad preparada para JWT** (autenticación y autorización).
 - **Modularidad y escalabilidad** para futuras integraciones (web, mobile).
 - **Código limpio y documentado** con principios SOLID y buenas prácticas.
 
