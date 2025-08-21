@@ -15,9 +15,13 @@ import com.proyecto.concecionaria.service.UsuarioService;
 import com.proyecto.concecionaria.service.VehiculoService;
 import com.proyecto.concecionaria.service.VentaService;
 import com.proyecto.concecionaria.util.ApiResponse;
+import com.proyecto.concecionaria.util.FrecuenciaPago;
 import jakarta.validation.Valid;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,23 +83,24 @@ public class VentaController {
     @PostMapping
     public ResponseEntity<?> crearVenta(@Valid @RequestBody VentaPostDTO ventaDTO) {
         try {
-            Usuario usuario = usuarioService.obtener(ventaDTO.getEmpleado().getId()).orElse(null);
+            Usuario usuario = usuarioService.obtener(ventaDTO.getEmpleadoId().getId()).orElse(null);
             if (usuario == null) {
                 return new ResponseEntity<>(new ApiResponse<>("Usuario no encontrado", null, false), HttpStatus.NOT_FOUND);
             }
-            Cliente cliente = clienteService.obtener(ventaDTO.getCliente().getId()).orElse(null);
+            Cliente cliente = clienteService.obtener(ventaDTO.getClienteId().getId()).orElse(null);
             if (cliente == null) {
                 return new ResponseEntity<>(new ApiResponse<>("Cliente no encontrado", null, false), HttpStatus.NOT_FOUND);
             }
 
+
             Venta venta = new Venta();
-            venta.setActivo(ventaDTO.getActivo());
+            venta.setActivo(Boolean.TRUE);
             venta.setCliente(cliente);
             venta.setCuotas(ventaDTO.getCuotas());
             venta.setEmpleado(usuario);
             venta.setEntrega(ventaDTO.getEntrega());
             venta.setEstado(ventaDTO.getEstado());
-            venta.setFecha(ventaDTO.getFecha());
+            venta.setFecha(LocalDate.now());
             venta.setFrecuenciaPago(ventaDTO.getFrecuenciaPago());
             venta.setTotal(ventaDTO.getTotal());
 
@@ -115,11 +120,11 @@ public class VentaController {
         try {
             Venta venta = ventaService.obtener(id).orElse(null);
             if (venta != null) {
-                Usuario usuario = usuarioService.obtener(ventaDTO.getEmpleado().getId()).orElse(null);
+                Usuario usuario = usuarioService.obtener(ventaDTO.getEmpleadoID().getId()).orElse(null);
                 if (usuario == null) {
                     return new ResponseEntity<>(new ApiResponse<>("Usuario no encontrado", null, false), HttpStatus.NOT_FOUND);
                 }
-                Cliente cliente = clienteService.obtener(ventaDTO.getCliente().getId()).orElse(null);
+                Cliente cliente = clienteService.obtener(ventaDTO.getClienteID().getId()).orElse(null);
                 if (cliente == null) {
                     return new ResponseEntity<>(new ApiResponse<>("Cliente no encontrado", null, false), HttpStatus.NOT_FOUND);
                 }
@@ -130,11 +135,12 @@ public class VentaController {
                 venta.setEmpleado(usuario);
                 venta.setEntrega(ventaDTO.getEntrega());
                 venta.setEstado(ventaDTO.getEstado());
-                venta.setFecha(ventaDTO.getFecha());
+                venta.setFecha(LocalDate.now());
                 venta.setFrecuenciaPago(ventaDTO.getFrecuenciaPago());
                 venta.setTotal(ventaDTO.getTotal());
-
-                venta.setDetalleVentas(mapearDetalles(ventaDTO.getDetalleVentas(), venta));
+                List<DetalleVenta> nuevosDetalles = mapearDetalles(ventaDTO.getDetalleVentas(), venta);
+                venta.getDetalleVentas().clear();
+                venta.getDetalleVentas().addAll(nuevosDetalles);
 
                 venta.generarPagos();
                 VentaGetDTO dto = VentaMapper.toDTO(ventaService.guardar(venta));
@@ -146,20 +152,28 @@ public class VentaController {
         }
     }
 
+
     private List<DetalleVenta> mapearDetalles(List<DetalleVentaPostDTO> detalleDTOs, Venta venta) {
         List<DetalleVenta> detalles = new ArrayList<>();
         for (DetalleVentaPostDTO dto : detalleDTOs) {
-            Vehiculo vehiculo = vehiculoService.obtener(dto.getVehiculoId()).orElse(null);
-            if (vehiculo == null) {
-                throw new RuntimeException("Vehículo no encontrado con ID: " + dto.getVehiculoId());
+            Integer idVehiculo = dto.getVehiculoId();
+            if (idVehiculo == null) {
+                throw new IllegalArgumentException("El ID del vehículo no puede ser nulo");
+            }
+            Vehiculo vehiculo = vehiculoService.obtener(idVehiculo)
+                    .orElseThrow(() -> new RuntimeException("Vehículo no encontrado con ID: " + idVehiculo));
+            if (vehiculo.getId() == null) {
+                throw new RuntimeException("Vehículo obtenido tiene ID nulo: " + idVehiculo);
             }
             DetalleVenta detalle = new DetalleVenta();
             detalle.setVehiculo(vehiculo);
             detalle.setCantidad(dto.getCantidad());
             detalle.setPrecioUnitario(dto.getPrecioUnitario());
             detalle.setVenta(venta);
+
             detalles.add(detalle);
         }
+
         return detalles;
     }
 
@@ -168,6 +182,7 @@ public class VentaController {
         try {
             Venta venta = ventaService.obtener(id).orElse(null);
             if (venta != null) {
+                venta.limpiarPagos();
                 ventaService.eliminar(venta.getId());
                 return new ResponseEntity<>(new ApiResponse<>("Venta dada de baja ", null, true), HttpStatus.OK);
             }

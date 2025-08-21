@@ -7,16 +7,19 @@ import com.proyecto.concecionaria.DTOs.Vehiculo.VehiculoPutDTO;
 import com.proyecto.concecionaria.entity.DetalleVenta;
 import com.proyecto.concecionaria.entity.Imagen;
 import com.proyecto.concecionaria.entity.Vehiculo;
+import com.proyecto.concecionaria.interfaz.ImagenIntefaz;
 import com.proyecto.concecionaria.service.DetalleVentaService;
 import com.proyecto.concecionaria.service.VehiculoService;
 import com.proyecto.concecionaria.util.ApiResponse;
 
 import jakarta.validation.Valid;
 import org.apache.commons.io.FilenameUtils;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.*;
 import java.util.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -32,6 +35,8 @@ public class VehiculoController {
 
     @Autowired
     private VehiculoService vehiculoService;
+    @Autowired
+    private ImagenIntefaz imagenService;
     @Autowired
     private DetalleVentaService detalleService;
 
@@ -65,41 +70,47 @@ public class VehiculoController {
         }
     }
 
-    @GetMapping("/imagen/{nombre}")
-    public ResponseEntity<Resource> verImagen(@PathVariable String nombre) {
+    @GetMapping("/imagen/{id}")
+    public ResponseEntity<Resource> verImagen(@PathVariable Integer id) {
         try {
-            Path ruta = Paths.get(rutaImagenes).resolve(nombre).toAbsolutePath();
-            Resource recurso = new UrlResource(ruta.toUri());
-
-            if (!recurso.exists() || !recurso.isReadable()) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            Imagen imagen = imagenService.obtener(id).orElse(null);
+            if (imagen == null) {
+                return ResponseEntity.notFound().build();
             }
 
-            String extension = FilenameUtils.getExtension(nombre).toLowerCase();
+            Path ruta = Paths.get(rutaImagenes).resolve(imagen.getNombre()).toAbsolutePath();
+            System.out.println("Buscando imagen en: " + ruta);
 
-            MediaType contentType = switch (extension) {
-                case "png" ->
-                    MediaType.IMAGE_PNG;
-                case "jpg", "jpeg" ->
-                    MediaType.IMAGE_JPEG;
-                case "gif" ->
-                    MediaType.IMAGE_GIF;
-                default ->
-                    MediaType.APPLICATION_OCTET_STREAM;
+            Resource recurso = new UrlResource(ruta.toUri());
+            if (!recurso.exists() || !recurso.isReadable()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            String extension = FilenameUtils.getExtension(imagen.getNombre()).toLowerCase();
+            MediaType mediaType = switch (extension) {
+                case "png" -> MediaType.IMAGE_PNG;
+                case "jpg", "jpeg" -> MediaType.IMAGE_JPEG;
+                case "gif" -> MediaType.IMAGE_GIF;
+                default -> MediaType.APPLICATION_OCTET_STREAM;
             };
 
-            return ResponseEntity.ok().contentType(contentType).body(recurso);
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .body(recurso);
 
         } catch (MalformedURLException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
+
+
 
     @PostMapping
     public ResponseEntity<?> crearVehiculo(@Valid @RequestBody VehiculoPostDTO vehiculoDTO) {
         try {
             if (vehiculoService.existe(vehiculoDTO.getMarca(), vehiculoDTO.getModelo(), vehiculoDTO.getAnioModelo())) {
-                Vehiculo vehiculo = vehiculoService.obtener(vehiculoDTO.getId()).orElse(null);
+                Optional<Vehiculo> vehiculoOptional = vehiculoService.buscar(vehiculoDTO.getMarca(), vehiculoDTO.getModelo(), vehiculoDTO.getAnioModelo());
+                Vehiculo vehiculo = vehiculoOptional.get();
                 Integer stock = vehiculo.getStock();
                 vehiculo.setStock(stock + vehiculoDTO.getStock());
                 return new ResponseEntity<>(new ApiResponse<>("Vehiculo ya existente, se actualizo el stock", vehiculoDTO, true), HttpStatus.OK);
@@ -125,7 +136,6 @@ public class VehiculoController {
                 for (String nombre : nombresImagenes) {
                     Imagen imagen = new Imagen();
                     imagen.setNombre(nombre);
-                    imagen.setActivo(true);
                     vehiculo.addImagen(imagen);
                 }
                 VehiculoGetDTO dto = VehiculoMapper.toDTO(vehiculoService.guardar(vehiculo));
@@ -135,10 +145,9 @@ public class VehiculoController {
             return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     @PostMapping(value = "subir-imagen/{idVehiculo}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> subirImagenesVehiculo(@PathVariable Integer idVehiculo,
-            @RequestParam("imagenes") MultipartFile[] imagenes) {
+                                                   @RequestParam("imagenes") MultipartFile[] imagenes) {
         try {
             Optional<Vehiculo> optional = vehiculoService.obtener(idVehiculo);
             if (optional.isEmpty()) {
@@ -150,14 +159,26 @@ public class VehiculoController {
             if (!Files.exists(directorioPath)) {
                 Files.createDirectories(directorioPath);
             }
-            vehiculo.getImagenes().clear();
+
+            // Eliminar archivos antiguos
+            if (vehiculo.getImagenes() != null) {
+                for (Imagen img : vehiculo.getImagenes()) {
+                    try {
+                        Files.deleteIfExists(directorioPath.resolve(img.getNombre()));
+                    } catch (IOException e) {
+                        System.err.println("No se pudo eliminar la imagen: " + img.getNombre());
+                    }
+                }
+                vehiculo.getImagenes().clear();
+            }
 
             List<String> extensionesPermitidas = List.of("jpg", "jpeg", "png", "gif");
+
             for (MultipartFile archivo : imagenes) {
                 String extension = FilenameUtils.getExtension(archivo.getOriginalFilename()).toLowerCase();
-
                 if (!extensionesPermitidas.contains(extension)) {
-                    return new ResponseEntity<>(new ApiResponse<>("Formato de imagen no permitido: " + extension, null, false), HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(new ApiResponse<>("Formato de imagen no permitido: " + extension, null, false),
+                            HttpStatus.BAD_REQUEST);
                 }
 
                 String nombre = UUID.randomUUID() + "_" + archivo.getOriginalFilename();
@@ -165,17 +186,20 @@ public class VehiculoController {
                 Files.write(rutaImagen, archivo.getBytes());
 
                 Imagen imagen = new Imagen();
-                imagen.setActivo(true);
                 imagen.setNombre(nombre);
-                vehiculo.addImagen(imagen);
+                imagen.setVehiculo(vehiculo);
+                vehiculo.getImagenes().add(imagen);
             }
+
             VehiculoGetDTO dto = VehiculoMapper.toDTO(vehiculoService.guardar(vehiculo));
             return new ResponseEntity<>(new ApiResponse<>("Imágenes subidas correctamente", dto, true), HttpStatus.CREATED);
 
         } catch (IOException e) {
-            return new ResponseEntity<>(new ApiResponse<>("Error al subir imágenes: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ApiResponse<>("Error al subir imágenes: " + e.getMessage(), null, false),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @PutMapping("{id}")
     public ResponseEntity<?> actualizarVehiculo(@PathVariable Integer id, @RequestBody VehiculoPutDTO vehiculoDTO) {
@@ -198,13 +222,7 @@ public class VehiculoController {
                     return new ResponseEntity<>(new ApiResponse<>("Una o más detalles no existen", null, false), HttpStatus.BAD_REQUEST);
                 }
                 vehiculo.setDetalleVentas(detalle);
-                List<String> nombresImagenes = Optional.ofNullable(vehiculoDTO.getNombresImagenes()).orElse(Collections.emptyList());
-                for (String nombre : nombresImagenes) {
-                    Imagen imagen = new Imagen();
-                    imagen.setNombre(nombre);
-                    imagen.setActivo(true);
-                    vehiculo.addImagen(imagen);
-                }
+
                 VehiculoGetDTO dto = VehiculoMapper.toDTO(vehiculoService.guardar(vehiculo));
                 return new ResponseEntity<>(new ApiResponse<>("Vehiculo actualizado con existo", dto, true), HttpStatus.OK);
             } else {
@@ -231,4 +249,45 @@ public class VehiculoController {
         }
     }
 
+    @DeleteMapping("{idVehiculo}/imagen/{idImagen}")
+    public ResponseEntity<?> eliminarImagenVehiculo(@PathVariable Integer idVehiculo,
+                                                    @PathVariable Integer idImagen) {
+        try {
+            Optional<Vehiculo> optionalVehiculo = vehiculoService.obtener(idVehiculo);
+            if (optionalVehiculo.isEmpty()) {
+                return new ResponseEntity<>(new ApiResponse<>("Vehículo no encontrado", null, false), HttpStatus.NOT_FOUND);
+            }
+
+            Vehiculo vehiculo = optionalVehiculo.get();
+
+            // Buscar la imagen dentro del vehículo
+            Imagen imagen = vehiculo.getImagenes().stream()
+                    .filter(img -> img.getId().equals(idImagen))
+                    .findFirst()
+                    .orElse(null);
+
+            if (imagen == null) {
+                return new ResponseEntity<>(new ApiResponse<>("Imagen no encontrada en este vehículo", null, false), HttpStatus.NOT_FOUND);
+            }
+
+            // Eliminar físicamente el archivo
+            Path ruta = Paths.get(rutaImagenes).resolve(imagen.getNombre()).toAbsolutePath();
+            try {
+                Files.deleteIfExists(ruta);
+            } catch (IOException e) {
+                return new ResponseEntity<>(new ApiResponse<>("Error al eliminar archivo físico: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            // Eliminar de la relación con el vehículo
+            vehiculo.getImagenes().remove(imagen);
+
+            vehiculoService.guardar(vehiculo);
+
+            VehiculoGetDTO dto = VehiculoMapper.toDTO(vehiculo);
+            return new ResponseEntity<>(new ApiResponse<>("Imagen eliminada con éxito", dto, true), HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

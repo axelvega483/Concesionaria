@@ -1,7 +1,7 @@
 package com.proyecto.concecionaria.DTOs.Venta;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.Setter;
 public class VentaPagosDTO {
 
     private Integer id;
-    private LocalDateTime fechaPago;
+    private LocalDate fechaPago;
     private BigDecimal monto;
 
 }

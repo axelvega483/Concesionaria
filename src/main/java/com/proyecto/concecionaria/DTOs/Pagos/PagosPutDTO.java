@@ -1,6 +1,7 @@
 package com.proyecto.concecionaria.DTOs.Pagos;
 
-import java.time.LocalDateTime;
+
+import com.proyecto.concecionaria.util.MetodoPago;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,5 @@ import lombok.Setter;
 @Setter
 public class PagosPutDTO {
 
-    private LocalDateTime fechaPago;
-    private String metodoPago;
+    private MetodoPago metodoPago;
 }

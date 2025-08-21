@@ -5,7 +5,7 @@ import com.proyecto.concecionaria.entity.Usuario;
 import com.proyecto.concecionaria.util.EstadoVenta;
 import com.proyecto.concecionaria.util.FrecuenciaPago;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import lombok.Setter;
 public class VentaGetDTO {
 
     private Integer id;
-    private LocalDateTime fecha;
+    private LocalDate fecha;
     private FrecuenciaPago frecuenciaPago;
     private BigDecimal total;
     private List<VentaDetalleDTO> detalleVentas;

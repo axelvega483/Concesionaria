@@ -15,19 +15,15 @@ import lombok.Setter;
 @Setter
 public class VentaPutDTO {
 
-    private Integer id;
-
-    private LocalDateTime fecha;
-
     private BigDecimal total;
 
     private FrecuenciaPago frecuenciaPago;
 
     private List<DetalleVentaPostDTO> detalleVentas;
 
-    private Cliente cliente;
+    private VentaClienteID clienteID;
 
-    private Usuario empleado;
+    private VentaUsuarioID empleadoID;
 
     private List<Integer> pagosId;
 

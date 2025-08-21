@@ -20,7 +20,6 @@ public class VehiculoPutDTO {
     private TipoVehiculo tipo;
     private EstadoVehiculo estado;
     private Integer kilometraje;
-    private List<String> nombresImagenes;
     private Boolean activo;
     private List<Integer> detalleVentasId;
 

@@ -10,15 +10,11 @@ import lombok.Setter;
 public class ClientePostDTO {
 
     @NotNull
-    private Integer id;
-    @NotNull
     private String nombre;
     @NotNull
     private String email;
     @NotNull
     private String dni;
-    @NotNull
-    private Boolean activo;
     @NotNull
     private List<Integer> ventasId;
 }

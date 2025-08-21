@@ -13,4 +13,6 @@ public interface VentaInterfaz {
     public List<Venta> listar();
 
     public void eliminar(Integer id);
+
+    public List<Venta> obtenerById(List<Integer> id);
 }

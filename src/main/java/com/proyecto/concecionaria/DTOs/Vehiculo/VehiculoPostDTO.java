@@ -10,9 +10,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class VehiculoPostDTO {
-
-    @NotNull
-    private Integer id;
     @NotNull
     private String marca;
     @NotNull

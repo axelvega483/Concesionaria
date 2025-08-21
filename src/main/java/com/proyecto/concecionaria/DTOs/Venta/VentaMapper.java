@@ -12,6 +12,7 @@ public class VentaMapper {
         dto.setActivo(venta.getActivo());
         dto.setCliente(venta.getCliente());
         dto.setEmpleado(venta.getEmpleado());
+        dto.setFrecuenciaPago(venta.getFrecuenciaPago());
         dto.setFecha(venta.getFecha());
         dto.setId(venta.getId());
         dto.setTotal(venta.getTotal());

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.proyecto.concecionaria.util.EstadoPagos;
 import com.proyecto.concecionaria.util.EstadoVenta;
 import com.proyecto.concecionaria.util.FrecuenciaPago;
+import com.proyecto.concecionaria.util.MetodoPago;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,12 +22,14 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,7 +50,7 @@ public class Venta implements Serializable {
 
     @NotNull(message = "La fecha de la venta no puede estar vacía")
     @Column(nullable = false)
-    private LocalDateTime fecha;
+    private LocalDate fecha;
 
     @NotNull(message = "El total no puede estar vacío")
     @PositiveOrZero(message = "El total debe ser mayor o igual a cero")
@@ -79,7 +82,7 @@ public class Venta implements Serializable {
 
     @NotNull(message = "Debe incluir al menos un pago de venta")
     @Size(min = 1, message = "Debe haber al menos un pago en la venta")
-    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("venta")
     private List<Pagos> pagos = new ArrayList<>();
 
@@ -100,16 +103,19 @@ public class Venta implements Serializable {
         pagos.add(pago);
         pago.setVenta(this);
     }
+    public void limpiarPagos() {
+        pagos.forEach(p -> p.setVenta(null)); // Romper vínculo
+        pagos.clear(); // Limpiar lista
+    }
 
     public void generarPagos() {
-        pagos.clear();
-
+        limpiarPagos();
         if (frecuenciaPago == FrecuenciaPago.UNICO) {
             Pagos pagoUnico = new Pagos();
             pagoUnico.setFechaPago(fecha);
             pagoUnico.setMonto(total);
             pagoUnico.setEstado(EstadoPagos.PENDIENTE);
-            pagoUnico.setMetodoPago("PENDIENTE");
+            pagoUnico.setMetodoPago(MetodoPago.PENDIENTE);
             pagoUnico.setActivo(true);
             agregarPago(pagoUnico);
         } else {
@@ -118,11 +124,8 @@ public class Venta implements Serializable {
     }
 
     public void generarPagosConCuotas() {
-        LocalDateTime fechaPago = this.fecha;
-
-        BigDecimal porcentajeEntrega = BigDecimal.valueOf(entrega != null ? entrega : 0.0)
-                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-        BigDecimal montoEntrega = total.multiply(porcentajeEntrega);
+        LocalDate fechaPago = this.fecha;
+        BigDecimal montoEntrega = BigDecimal.valueOf(entrega != null ? entrega : 0.0);
         BigDecimal montoRestante = total.subtract(montoEntrega);
 
         int cantidadCuotas = (cuotas != null && cuotas > 0) ? cuotas : 1;
@@ -133,23 +136,33 @@ public class Venta implements Serializable {
             pagoInicial.setFechaPago(fechaPago);
             pagoInicial.setMonto(montoEntrega);
             pagoInicial.setEstado(EstadoPagos.PENDIENTE);
-            pagoInicial.setMetodoPago("PENDIENTE");
+            pagoInicial.setMetodoPago(MetodoPago.PENDIENTE);
             pagoInicial.setActivo(true);
             agregarPago(pagoInicial);
         }
 
-        if (montoRestante.compareTo(BigDecimal.ZERO) > 0) {
-            for (int i = 0; i < cantidadCuotas; i++) {
-                Pagos cuota = new Pagos();
-                cuota.setFechaPago(fechaPago.plusMonths(i + 1));
+        BigDecimal sumaCuotas = BigDecimal.ZERO;
+
+        for (int i = 0; i < cantidadCuotas; i++) {
+            Pagos cuota = new Pagos();
+            cuota.setFechaPago(fechaPago.plusMonths(i + 1));
+
+            // Ajustar la última cuota si hay diferencia por redondeo
+            if (i == cantidadCuotas - 1) {
+                BigDecimal montoUltimaCuota = montoRestante.subtract(sumaCuotas);
+                cuota.setMonto(montoUltimaCuota);
+            } else {
                 cuota.setMonto(montoPorCuota);
-                cuota.setEstado(EstadoPagos.PENDIENTE);
-                cuota.setMetodoPago("PENDIENTE");
-                cuota.setActivo(true);
-                agregarPago(cuota);
+                sumaCuotas = sumaCuotas.add(montoPorCuota);
             }
+
+            cuota.setEstado(EstadoPagos.PENDIENTE);
+            cuota.setMetodoPago(MetodoPago.PENDIENTE);
+            cuota.setActivo(true);
+            agregarPago(cuota);
         }
     }
+
 
     public void actualizarSaldo() {
         if (getSaldoRestante().compareTo(BigDecimal.ZERO) <= 0) {

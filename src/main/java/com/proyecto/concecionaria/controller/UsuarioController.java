@@ -6,18 +6,19 @@ import com.proyecto.concecionaria.DTOs.Usuario.UsuarioPostDTO;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioPutDTO;
 import com.proyecto.concecionaria.entity.Usuario;
 import com.proyecto.concecionaria.entity.Venta;
+import com.proyecto.concecionaria.interfaz.UsuarioInterfaz;
+import com.proyecto.concecionaria.interfaz.VentaInterfaz;
 import com.proyecto.concecionaria.service.UsuarioService;
 import com.proyecto.concecionaria.service.VentaService;
 import com.proyecto.concecionaria.util.ApiResponse;
-import com.proyecto.concecionaria.Security.JwtUtil;
 import jakarta.validation.Valid;
+
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,24 +35,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class UsuarioController {
 
     @Autowired
-    private UsuarioService usuarioService;
+    private UsuarioInterfaz usuarioService;
+
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtUtil jwtUtil;
-    @Autowired
-    private VentaService ventaService;
+    private VentaInterfaz ventaService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UsuarioPostDTO postDTO) {
         try {
-            Optional<Usuario> optionalUsuario = usuarioService.findByCorreo(postDTO.getEmail());
+            Optional<Usuario> optionalUsuario = usuarioService.findByCorreoAndPasswoed(postDTO.getEmail(), postDTO.getPassword());
+            System.out.println("user" + optionalUsuario.toString());
             if (optionalUsuario.isPresent()) {
-                Usuario usuario = optionalUsuario.get();
-                if (usuario.getActivo() && passwordEncoder.matches(postDTO.getPassword(), usuario.getPassword())) {
-                    String token = jwtUtil.generateToken(usuario);
-                    return new ResponseEntity<>(new ApiResponse<>("Login correcto", token, true), HttpStatus.OK);
-                }
+                UsuarioGetDTO dto = UsuarioMapper.toDTO(optionalUsuario.get());
+                return new ResponseEntity<>(new ApiResponse<>("Login correcto", dto, true), HttpStatus.OK);
             }
             return new ResponseEntity<>(new ApiResponse<>("Credenciales no encontradas", null, false), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
@@ -61,24 +57,19 @@ public class UsuarioController {
 
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @GetMapping
     public ResponseEntity<?> listarUsuario() {
         try {
-            List<UsuarioGetDTO> dto = usuarioService.listar()
-                    .stream()
-                    .map(UsuarioMapper::toDTO)
-                    .toList();
+            List<UsuarioGetDTO> dto = usuarioService.listar().stream().map(UsuarioMapper::toDTO).toList();
             return new ResponseEntity<>(new ApiResponse<>("Listado de usuarios obtenidos correctamente", dto, true), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(new ApiResponse<>("Error: ", null, false), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("{id}")
-    public ResponseEntity<?> obtenerUsuario(@PathVariable Integer id
-    ) {
+    public ResponseEntity<?> obtenerUsuario(@PathVariable Integer id) {
         try {
             Usuario usuario = usuarioService.obtener(id).orElse(null);
             if (usuario != null) {
@@ -92,14 +83,12 @@ public class UsuarioController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
-    public ResponseEntity<?> crearUsuario(@Valid
-            @RequestBody UsuarioPostDTO usuarioDTO
-    ) {
+    @PostMapping("")
+    public ResponseEntity<?> crearUsuario(@Valid @RequestBody UsuarioPostDTO usuarioDTO) {
         try {
+            System.out.println("entra");
             if (usuarioService.existe(usuarioDTO.getDni())) {
-                return new ResponseEntity<>(new ApiResponse<>("El Usuario ya existe", usuarioDTO, false), HttpStatus.CONFLICT);
+                return new ResponseEntity<>(new ApiResponse<>("El Usuario ya existe", null, false), HttpStatus.CONFLICT);
             }
             List<Venta> ventas = ventaService.obtenerById(usuarioDTO.getVentasId());
             if (ventas.size() != usuarioDTO.getVentasId().size()) {
@@ -115,16 +104,16 @@ public class UsuarioController {
             usuario.setRol(usuarioDTO.getRol());
             usuario.setVentas(ventas);
             UsuarioGetDTO dto = UsuarioMapper.toDTO(usuarioService.guardar(usuario));
+            System.out.println("user" + dto.toString());
             return new ResponseEntity<>(new ApiResponse<>("Usuario creado ", dto, true), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse<>("Error: ", null, false), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("{id}")
-    public ResponseEntity<?> actualizarUsuario(@PathVariable Integer id, @RequestBody UsuarioPutDTO usuarioDTO
-    ) {
+    public ResponseEntity<?> actualizarUsuario(@PathVariable Integer id, @RequestBody UsuarioPutDTO usuarioDTO) {
         try {
             Usuario usuario = usuarioService.obtener(id).orElse(null);
             if (usuario != null) {
@@ -149,10 +138,8 @@ public class UsuarioController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("{id}")
-    public ResponseEntity<?> eliminarUsuario(@PathVariable Integer id
-    ) {
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Integer id) {
         try {
             Usuario usuario = usuarioService.obtener(id).orElse(null);
             if (usuario != null) {

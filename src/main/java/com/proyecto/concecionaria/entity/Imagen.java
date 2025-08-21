@@ -29,9 +29,6 @@ public class Imagen {
 
     private String nombre;
 
-    @Column(nullable = false)
-    private Boolean activo = true;
-
     @ManyToOne
     @JoinColumn(name = "vehiculo_id")
     private Vehiculo vehiculo;

@@ -10,7 +10,7 @@ import lombok.Setter;
 public class DetalleVentaPostDTO {
 
     @NotNull
-    private Integer VehiculoId;
+    private Integer vehiculoId;
     @NotNull
     private Integer cantidad;
     @NotNull

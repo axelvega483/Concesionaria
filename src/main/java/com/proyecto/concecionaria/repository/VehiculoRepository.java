@@ -15,4 +15,5 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
 
     @Query("SELECT v FROM Vehiculo v WHERE v.activo=TRUE AND v.marca=:marca AND v.modelo=:modelo AND v.anioModelo=:anioModelo")
     public Optional<Vehiculo> findByMarcaModeloAnioModelo(String marca, String modelo, Integer anioModelo);
+
 }

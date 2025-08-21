@@ -3,6 +3,7 @@ package com.proyecto.concecionaria.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.proyecto.concecionaria.util.EstadoPagos;
+import com.proyecto.concecionaria.util.MetodoPago;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,7 +17,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,13 +37,12 @@ public class Pagos implements Serializable {
     @Column(name = "id")
     private Integer id;
 
-    @NotNull(message = "La fecha del pago no puede estar vacía")
-    @Column(nullable = false)
-    private LocalDateTime fechaPago;
+    private LocalDate fechaPago;
 
     @NotNull(message = "El metodo de pago no puede estar vacía")
     @Column(nullable = false)
-    private String metodoPago;
+    @Enumerated(EnumType.STRING)
+    private MetodoPago metodoPago;
 
     @NotNull(message = "El monto no puede estar vacía")
     @Column(nullable = false)

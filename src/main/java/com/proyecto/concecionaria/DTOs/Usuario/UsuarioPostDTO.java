@@ -11,9 +11,6 @@ import lombok.Setter;
 public class UsuarioPostDTO {
 
     @NotNull
-    private Integer id;
-
-    @NotNull
     private String nombre;
 
     @NotNull
@@ -28,7 +25,6 @@ public class UsuarioPostDTO {
     @NotNull
     private RolEmpleado rol;
 
-    @NotNull
     @NotNull
     private Boolean activo;
 

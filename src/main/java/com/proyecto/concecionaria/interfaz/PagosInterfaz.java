@@ -1,17 +1,19 @@
 package com.proyecto.concecionaria.interfaz;
 
 import com.proyecto.concecionaria.entity.Pagos;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface PagosInterfaz {
 
-    public Pagos guardar(Pagos pagos);
+    public Optional<Pagos> findById(Integer id);
 
-    public Optional<Pagos> obtener(Integer id);
+    public List<Pagos> findByAll();
 
-    public List<Pagos> listar();
+    public void cancelar(Integer id);
 
-    public void eliminar(Integer id);
+    public Pagos save(Pagos pagos);
+
 
 }
