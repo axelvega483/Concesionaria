@@ -28,7 +28,6 @@ public class UsuarioPostDTO {
     @NotNull
     private Boolean activo;
 
-    @NotNull
     private List<Integer> ventasId;
 
 }

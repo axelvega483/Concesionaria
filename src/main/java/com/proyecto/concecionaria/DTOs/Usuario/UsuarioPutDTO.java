@@ -9,8 +9,6 @@ import lombok.Setter;
 @Setter
 public class UsuarioPutDTO {
 
-    private Integer id;
-
     private String nombre;
 
     private String email;

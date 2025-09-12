@@ -15,6 +15,5 @@ public class ClientePostDTO {
     private String email;
     @NotNull
     private String dni;
-    @NotNull
     private List<Integer> ventasId;
 }

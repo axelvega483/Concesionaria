@@ -6,5 +6,5 @@ public enum TipoVehiculo {
     CAMIONETA,
     MOTO,
     UTILITARIO,
-    FURGON,
+    FURGON
 }

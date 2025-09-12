@@ -8,8 +8,6 @@ import lombok.Setter;
 @Setter
 public class ClientePutDTO {
 
-    private Integer id;
-
     private String nombre;
 
     private String email;

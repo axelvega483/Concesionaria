@@ -10,7 +10,6 @@ import lombok.Setter;
 @Setter
 public class VehiculoPutDTO {
 
-    private Integer id;
     private String marca;
     private String modelo;
     private Integer anioModelo;
