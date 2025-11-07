@@ -55,6 +55,10 @@ Sistema de backend para la administración integral de una concesionaria de veh�
 
 ---
 
+## 📄 Documentación Técnica
+- [Swagger UI](http://localhost:8080/swagger-ui/index.html)
+
+---
 ## ⚙️ Requerimientos No Funcionales
 
 - **Validaciones en entidades** con mensajes claros y personalizados.
