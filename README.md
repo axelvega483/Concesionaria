@@ -1,67 +1,133 @@
-# 🚗 Sistema de Gestión para una Concesionaria
+<h1 align="center">
+  🚗💨 Sistema de Gestión para Concesionaria
+</h1>
 
-Sistema de backend para la administración integral de una concesionaria de vehículos. Permite gestionar vehículos, clientes, usuarios (empleados), ventas, pagos y estados asociados. Pensado para optimizar y automatizar los procesos comerciales y financieros mediante una API REST robusta, extensible y segura.
+<p align="center">
+  <b>Sistema backend completo para administración integral de concesionaria vehicular</b>
+  <br>
+  <em>Desarrollado con Spring Boot • MySQL • OpenAPI 3</em>
+</p>
+
+<p align="center">
+  <a href="http://localhost:8080/swagger-ui/index.html">
+    <img src="https://img.shields.io/badge/Documentación-SwaggerUI-brightgreen?style=for-the-badge&logo=swagger" alt="Swagger UI">
+  </a>
+  <a href="http://localhost:8080/v3/api-docs">
+    <img src="https://img.shields.io/badge/API-OpenAPI3-orange?style=for-the-badge&logo=openapi-initiative" alt="OpenAPI 3">
+  </a>
+  <img src="https://img.shields.io/badge/Java-17-blue?style=for-the-badge&logo=openjdk" alt="Java 17">
+  <img src="https://img.shields.io/badge/Spring_Boot-3.4.5-brightgreen?style=for-the-badge&logo=springboot" alt="Spring Boot">
+</p>
 
 ---
 
 ## 🌟 Características del Sistema
 
-- **Gestión avanzada de ventas** con generación automática de pagos (cuotas o pago único).
-- **Control de estados** de ventas y pagos para seguimiento financiero detallado.
-- **Confirmación y anulación de pagos** con actualización automática del saldo pendiente.
-- **Relaciones sólidas entre entidades**: vehículos, clientes, usuarios, ventas y pagos.
-- **Validaciones integradas** en el modelo con mensajes personalizados.
-- **DTOs personalizados** para diferentes vistas y respuestas.
-- **Inicialización automática del usuario administrador** si no existen registros.
+<div align="center">
+
+| Característica | Icono | Descripción |
+|----------------|-------|-------------|
+| **Gestión Avanzada de Ventas** | 💰 | Generación automática de pagos (cuotas o pago único) |
+| **Control de Estados** | 📊 | Seguimiento financiero detallado de ventas y pagos |
+| **Confirmación y Anulación** | 🔄 | Actualización automática del saldo pendiente |
+| **Relaciones Sólidas** | 🔗 | Entidades interconectadas: vehículos, clientes, usuarios |
+| **Validaciones Integradas** | ✅ | Modelo con mensajes personalizados y robustos |
+| **DTOs Personalizados** | 🎯 | Vistas específicas para diferentes respuestas |
+| **Inicialización Automática** | 🤖 | Usuario administrador creado automáticamente |
+
+</div>
+
+---
+
+## 📦 Módulos del Sistema
+
+<div align="center">
+
+| Módulo | Icono | Descripción | Endpoints |
+|--------|-------|-------------|-----------|
+| **Vehículos** | 🚗 | Gestión completa de inventario | `GET/POST/PUT/DELETE /vehiculo` |
+| **Clientes** | 👥 | Registro y seguimiento | `GET/POST/PUT /cliente` |
+| **Ventas** | 💰 | Procesos de venta y cuotas | `GET/POST /ventas` |
+| **Pagos** | 💳 | Control de pagos y estados | `GET/PUT /pagos` |
+| **Usuarios** | 🔐 | Sistema de autenticación | `POST /usuario/login` |
+
+</div>
 
 ---
 
 ## 🛠️ Tecnologías Utilizadas
 
+<div align="center">
+
 ### Back-end (API REST)
-- **Java 17**
-- **Spring Boot**
-- **Spring Web**
-- **Spring Data JPA**
-- **Bean Validation (javax.validation)**
-- **Lombok**
-- **MySQL** / PostgreSQL (configurable)
-- **Maven**
+
+| Tecnología | Icono | Uso |
+|------------|-------|-----|
+| **Java 17** | <img src="https://img.shields.io/badge/Java-17-blue?style=flat&logo=openjdk" alt="Java 17"> | Lenguaje de programación principal |
+| **Spring Boot** | <img src="https://img.shields.io/badge/Spring_Boot-3.4.5-brightgreen?style=flat&logo=springboot" alt="Spring Boot"> | Framework principal de desarrollo |
+| **Spring Data JPA** | <img src="https://img.shields.io/badge/JPA-Hibernate-59666C?style=flat&logo=hibernate" alt="Spring Data JPA"> | Persistencia y mapeo ORM |
+| **MySQL** | <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql" alt="MySQL"> | Base de datos relacional |
+| **Bean Validation** | <img src="https://img.shields.io/badge/Validation-JSR380-orange?style=flat" alt="Bean Validation"> | Validación de datos y modelos |
+| **Maven** | <img src="https://img.shields.io/badge/Maven-C71A36?style=flat&logo=apache-maven" alt="Maven"> | Gestión de dependencias y build |
+
+</div>
 
 ---
 
 ## 📝 Requerimientos Funcionales
 
-1. **Vehículos**:
-   - Alta, baja, edición y listado de vehículos.
-   - Información detallada: marca, modelo, año, estado, precio.
+<div align="center">
 
-2. **Clientes**:
-   - Gestión completa de clientes.
-   - Visualización del historial de compras y pagos realizados.
+| Módulo | Funcionalidades | Estado |
+|--------|-----------------|--------|
+| **🚗 Vehículos** | Alta, baja, edición y listado • Información detallada (marca, modelo, año, estado, precio) | ✅ Implementado |
+| **👥 Clientes** | Gestión completa • Visualización de historial de compras y pagos | ✅ Implementado |
+| **👨‍💼 Usuarios** | Administración con roles (ADMIN, VENDEDOR) • Creación automática de administrador | ✅ Implementado |
+| **💰 Ventas** | Registro con detalles • Generación automática de pagos • Actualización de saldo y estado | ✅ Implementado |
+| **💳 Pagos** | Confirmación y anulación • Actualización automática del saldo pendiente | ✅ Implementado |
 
-3. **Usuarios (Empleados)**:
-   - Administración de usuarios con roles (`ADMIN`, `VENDEDOR`).
-   - Creación automática del administrador si no hay registros.
-
-4. **Ventas**:
-   - Registro de ventas con detalle de vehículo y cliente.
-   - Generación automática de pagos asociados.
-   - Actualización de saldo y estado de la venta.
-
-5. **Pagos**:
-   - Confirmación y anulación de pagos.
-   - Actualización automática del saldo pendiente y estado del pago.
+</div>
 
 ---
 
 ## 📄 Documentación Técnica
-- [Swagger UI](http://localhost:8080/swagger-ui/index.html)
+
+<div align="center">
+
+| Recurso | Enlace | Descripción |
+|---------|--------|-------------|
+| **📖 Swagger UI** | [Swagger](http://localhost:8080/swagger-ui/index.html) | Documentación interactiva completa de la API |
+| **🔧 Endpoints** | Ver tabla de módulos | Lista completa de endpoints disponibles |
+
+</div>
 
 ---
+
 ## ⚙️ Requerimientos No Funcionales
 
-- **Validaciones en entidades** con mensajes claros y personalizados.
-- **Modularidad y escalabilidad** para futuras integraciones (web, mobile).
-- **Código limpio y documentado** con principios SOLID y buenas prácticas.
+<div align="center">
 
+| Categoría | Especificación | Estado |
+|-----------|----------------|--------|
+| **🛡️ Validaciones** | Entidades con mensajes claros y personalizados | ✅ Implementado |
+| **📐 Modularidad** | Arquitectura escalable para futuras integraciones (web, mobile) | ✅ Implementado |
+| **💻 Código Limpio** | Principios SOLID y buenas prácticas de desarrollo | ✅ Implementado |
+| **🔒 Seguridad** | Validación de datos y relaciones consistentes | ✅ Implementado |
+| **📊 Performance** | Consultas optimizadas y gestión eficiente de recursos | ✅ Implementado |
+
+</div>
+
+---
+
+<div align="center">
+
+## 🚀 ¿Listo para Comenzar?
+
+[**📖 Ir a la Documentación Interactiva**](http://localhost:8080/swagger-ui/index.html) • 
+
+**⭐ ¡No olvides darle una estrella al repo si te fue útil!**
+
+---
+*Desarrollado con ❤️ usando Spring Boot y Java 17*
+
+</div>
