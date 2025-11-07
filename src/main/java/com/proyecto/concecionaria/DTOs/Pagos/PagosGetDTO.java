@@ -18,6 +18,6 @@ public class PagosGetDTO {
     private BigDecimal monto;
     private PagoVenta venta;
     private EstadoPagos estado;
-    private Boolean activo;
+    private boolean activo;
 
 }

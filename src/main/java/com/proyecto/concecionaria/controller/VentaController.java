@@ -1,26 +1,17 @@
 package com.proyecto.concecionaria.controller;
 
-import com.proyecto.concecionaria.DTOs.DetallesVenta.DetalleVentaPostDTO;
 import com.proyecto.concecionaria.DTOs.Venta.VentaGetDTO;
-import com.proyecto.concecionaria.DTOs.Venta.VentaMapper;
 import com.proyecto.concecionaria.DTOs.Venta.VentaPostDTO;
-import com.proyecto.concecionaria.DTOs.Venta.VentaPutDTO;
-import com.proyecto.concecionaria.entity.Cliente;
-import com.proyecto.concecionaria.entity.DetalleVenta;
-import com.proyecto.concecionaria.entity.Usuario;
-import com.proyecto.concecionaria.entity.Vehiculo;
-import com.proyecto.concecionaria.entity.Venta;
-import com.proyecto.concecionaria.service.ClienteService;
-import com.proyecto.concecionaria.service.UsuarioService;
-import com.proyecto.concecionaria.service.VehiculoService;
-import com.proyecto.concecionaria.service.VentaService;
-import com.proyecto.concecionaria.util.ApiResponse;
-import com.proyecto.concecionaria.util.FrecuenciaPago;
+import com.proyecto.concecionaria.interfaz.VentaInterfaz;
+import com.proyecto.concecionaria.util.CustomApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +21,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,155 +31,42 @@ import org.springframework.web.bind.annotation.RestController;
 public class VentaController {
 
     @Autowired
-    private VentaService ventaService;
+    private VentaInterfaz ventaService;
 
-    @Autowired
-    private UsuarioService usuarioService;
 
-    @Autowired
-    private ClienteService clienteService;
-
-    @Autowired
-    private VehiculoService vehiculoService;
-
+    @Operation(summary = "Listar todas las ventas", description = "Obtiene una lista de todas las ventas activas en el sistema")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Ventas listadas correctamente"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
     @GetMapping
     public ResponseEntity<?> listarVentas() {
-        try {
-            List<VentaGetDTO> dto = ventaService.listar()
-                    .stream()
-                    .map(VentaMapper::toDTO)
-                    .toList();
-            return new ResponseEntity<>(new ApiResponse<>("Listado de ventas", dto, true), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<VentaGetDTO> dto = ventaService.listar();
+        return new ResponseEntity<>(new CustomApiResponse<>("Listado de ventas obtenido correctamente", dto, true), HttpStatus.OK);
     }
 
+    @Operation(summary = "Obtener venta por ID", description = "Busca una venta específica por su ID")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Venta encontrada exitosamente"), @ApiResponse(responseCode = "404", description = "Venta no encontrada"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
     @GetMapping("{id}")
-    public ResponseEntity<?> obtenerVenta(@PathVariable Integer id) {
-        try {
-            Venta venta = ventaService.obtener(id).orElse(null);
-            if (venta != null) {
-                VentaGetDTO dto = VentaMapper.toDTO(venta);
-                return new ResponseEntity<>(new ApiResponse<>("Venta encontrada", dto, true), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(new ApiResponse<>("Venta no encontrada", null, false), HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> obtenerVenta(@Parameter(description = "ID de la venta a buscar", example = "1", required = true) @PathVariable Integer id) {
+        Optional<VentaGetDTO> dto = ventaService.obtener(id);
+        if (dto.isPresent()) {
+            return new ResponseEntity<>(new CustomApiResponse<>("Venta encontrada", dto.get(), true), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new CustomApiResponse<>("Venta no encontrada", null, false), HttpStatus.NOT_FOUND);
         }
     }
 
+    @Operation(summary = "Crear nueva venta", description = "Registra una nueva venta en el sistema")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Venta creada exitosamente"), @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o stock insuficiente"), @ApiResponse(responseCode = "404", description = "Cliente o empleado no encontrado"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
     @PostMapping
-    public ResponseEntity<?> crearVenta(@Valid @RequestBody VentaPostDTO ventaDTO) {
-        try {
-            Usuario usuario = usuarioService.obtener(ventaDTO.getEmpleadoId().getId()).orElse(null);
-            if (usuario == null) {
-                return new ResponseEntity<>(new ApiResponse<>("Usuario no encontrado", null, false), HttpStatus.NOT_FOUND);
-            }
-            Cliente cliente = clienteService.obtener(ventaDTO.getClienteId().getId()).orElse(null);
-            if (cliente == null) {
-                return new ResponseEntity<>(new ApiResponse<>("Cliente no encontrado", null, false), HttpStatus.NOT_FOUND);
-            }
-
-
-            Venta venta = new Venta();
-            venta.setActivo(Boolean.TRUE);
-            venta.setCliente(cliente);
-            venta.setCuotas(ventaDTO.getCuotas());
-            venta.setEmpleado(usuario);
-            venta.setEntrega(ventaDTO.getEntrega());
-            venta.setEstado(ventaDTO.getEstado());
-            venta.setFecha(LocalDate.now());
-            venta.setFrecuenciaPago(ventaDTO.getFrecuenciaPago());
-            venta.setTotal(ventaDTO.getTotal());
-
-            venta.setDetalleVentas(mapearDetalles(ventaDTO.getDetalleVentas(), venta));
-
-            venta.generarPagos();
-            VentaGetDTO dto = VentaMapper.toDTO(ventaService.guardar(venta));
-            return new ResponseEntity<>(new ApiResponse<>("Venta creada ", dto, true), HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> crearVenta(@Parameter(description = "Datos de la venta a crear", required = true) @Valid @RequestBody VentaPostDTO ventaDTO) {
+        VentaGetDTO dto = ventaService.crear(ventaDTO);
+        return new ResponseEntity<>(new CustomApiResponse<>("Venta creada exitosamente", dto, true), HttpStatus.OK);
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<?> actualizarVenta(@PathVariable Integer id, @RequestBody VentaPutDTO ventaDTO) {
-        try {
-            Venta venta = ventaService.obtener(id).orElse(null);
-            if (venta != null) {
-                Usuario usuario = usuarioService.obtener(ventaDTO.getEmpleadoID().getId()).orElse(null);
-                if (usuario == null) {
-                    return new ResponseEntity<>(new ApiResponse<>("Usuario no encontrado", null, false), HttpStatus.NOT_FOUND);
-                }
-                Cliente cliente = clienteService.obtener(ventaDTO.getClienteID().getId()).orElse(null);
-                if (cliente == null) {
-                    return new ResponseEntity<>(new ApiResponse<>("Cliente no encontrado", null, false), HttpStatus.NOT_FOUND);
-                }
-
-                venta.setActivo(ventaDTO.getActivo());
-                venta.setCliente(cliente);
-                venta.setCuotas(ventaDTO.getCuotas());
-                venta.setEmpleado(usuario);
-                venta.setEntrega(ventaDTO.getEntrega());
-                venta.setEstado(ventaDTO.getEstado());
-                venta.setFecha(LocalDate.now());
-                venta.setFrecuenciaPago(ventaDTO.getFrecuenciaPago());
-                venta.setTotal(ventaDTO.getTotal());
-                List<DetalleVenta> nuevosDetalles = mapearDetalles(ventaDTO.getDetalleVentas(), venta);
-                venta.getDetalleVentas().clear();
-                venta.getDetalleVentas().addAll(nuevosDetalles);
-
-                venta.generarPagos();
-                VentaGetDTO dto = VentaMapper.toDTO(ventaService.guardar(venta));
-                return new ResponseEntity<>(new ApiResponse<>("Venta creada ", dto, true), HttpStatus.OK);
-            }
-            return new ResponseEntity<>(new ApiResponse<>("Venta no encontrada ", null, false), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-    private List<DetalleVenta> mapearDetalles(List<DetalleVentaPostDTO> detalleDTOs, Venta venta) {
-        List<DetalleVenta> detalles = new ArrayList<>();
-        for (DetalleVentaPostDTO dto : detalleDTOs) {
-            Integer idVehiculo = dto.getVehiculoId();
-            if (idVehiculo == null) {
-                throw new IllegalArgumentException("El ID del vehículo no puede ser nulo");
-            }
-            Vehiculo vehiculo = vehiculoService.obtener(idVehiculo)
-                    .orElseThrow(() -> new RuntimeException("Vehículo no encontrado con ID: " + idVehiculo));
-            if (vehiculo.getId() == null) {
-                throw new RuntimeException("Vehículo obtenido tiene ID nulo: " + idVehiculo);
-            }
-            DetalleVenta detalle = new DetalleVenta();
-            detalle.setVehiculo(vehiculo);
-            detalle.setCantidad(dto.getCantidad());
-            detalle.setPrecioUnitario(dto.getPrecioUnitario());
-            detalle.setVenta(venta);
-
-            detalles.add(detalle);
-        }
-
-        return detalles;
-    }
-
+    @Operation(summary = "Eliminar venta", description = "Elimina (desactiva) una venta del sistema")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Venta eliminada exitosamente"), @ApiResponse(responseCode = "404", description = "Venta no encontrada"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
     @DeleteMapping("{id}")
-    public ResponseEntity<?> eliminarVenta(@PathVariable Integer id) {
-        try {
-            Venta venta = ventaService.obtener(id).orElse(null);
-            if (venta != null) {
-                venta.limpiarPagos();
-                ventaService.eliminar(venta.getId());
-                return new ResponseEntity<>(new ApiResponse<>("Venta dada de baja ", null, true), HttpStatus.OK);
-            }
-            return new ResponseEntity<>(new ApiResponse<>("Venta no encontrada ", null, false), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> eliminarVenta(@Parameter(description = "ID de la venta a eliminar", example = "1", required = true) @PathVariable Integer id) {
+        VentaGetDTO dto = ventaService.cancelar(id);
+        return new ResponseEntity<>(new CustomApiResponse<>("Venta dada de baja exitosamente", dto, true), HttpStatus.OK);
     }
-
 }

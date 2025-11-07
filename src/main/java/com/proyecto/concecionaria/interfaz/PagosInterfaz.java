@@ -1,5 +1,7 @@
 package com.proyecto.concecionaria.interfaz;
 
+import com.proyecto.concecionaria.DTOs.Pagos.PagosGetDTO;
+import com.proyecto.concecionaria.DTOs.Pagos.PagosPutDTO;
 import com.proyecto.concecionaria.entity.Pagos;
 
 import java.util.List;
@@ -7,13 +9,15 @@ import java.util.Optional;
 
 public interface PagosInterfaz {
 
-    public Optional<Pagos> findById(Integer id);
+    Optional<PagosGetDTO> findById(Integer id);
 
-    public List<Pagos> findByAll();
+    List<PagosGetDTO> findByAll();
 
-    public void cancelar(Integer id);
+    PagosGetDTO cancelar(Integer id);
 
-    public Pagos save(Pagos pagos);
+    Pagos save(Pagos pagos);
 
+    PagosGetDTO confirmarPago(Integer id, PagosPutDTO putDTO);
 
+    Optional<Pagos> findEntityById(Integer id);
 }

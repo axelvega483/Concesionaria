@@ -1,16 +1,21 @@
 package com.proyecto.concecionaria.interfaz;
 
-import com.proyecto.concecionaria.entity.Cliente;
+import com.proyecto.concecionaria.DTOs.Cliente.ClienteGetDTO;
+import com.proyecto.concecionaria.DTOs.Cliente.ClientePostDTO;
+import com.proyecto.concecionaria.DTOs.Cliente.ClientePutDTO;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface ClienteInterfaz {
 
-    public Cliente guardar(Cliente cliente);
+    ClienteGetDTO crear(ClientePostDTO post);
 
-    public Optional<Cliente> obtener(Integer id);
+    Optional<ClienteGetDTO> obtener(Integer id);
 
-    public List<Cliente> listar();
+    List<ClienteGetDTO> listar();
 
-    public void eliminar(Integer id);
+    ClienteGetDTO actualizar(Integer id, ClientePutDTO put);
+
+    ClienteGetDTO eliminar(Integer id);
 }

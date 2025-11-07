@@ -16,6 +16,7 @@ public class VehiculoGetDTO {
     private Integer anioModelo;
     private Double precio;
     private Integer stock;
+    private String color;
     private TipoVehiculo tipo;
     private EstadoVehiculo estado;
     private Integer kilometraje;

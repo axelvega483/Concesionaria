@@ -30,8 +30,5 @@ public class VehiculoPostDTO {
     private Integer kilometraje;
     @NotNull
     private List<String> nombresImagenes;
-    @NotNull
-    private Boolean activo;
-    private List<Integer> detalleVentasId;
 
 }

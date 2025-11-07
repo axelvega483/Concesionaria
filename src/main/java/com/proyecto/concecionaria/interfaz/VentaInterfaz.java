@@ -1,18 +1,19 @@
 package com.proyecto.concecionaria.interfaz;
 
-import com.proyecto.concecionaria.entity.Venta;
+import com.proyecto.concecionaria.DTOs.Venta.VentaGetDTO;
+import com.proyecto.concecionaria.DTOs.Venta.VentaPostDTO;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface VentaInterfaz {
 
-    public Venta guardar(Venta venta);
+    VentaGetDTO crear(VentaPostDTO post);
 
-    public Optional<Venta> obtener(Integer id);
+    Optional<VentaGetDTO> obtener(Integer id);
 
-    public List<Venta> listar();
+    List<VentaGetDTO> listar();
 
-    public void eliminar(Integer id);
+    VentaGetDTO cancelar(Integer id);
 
-    public List<Venta> obtenerById(List<Integer> id);
 }

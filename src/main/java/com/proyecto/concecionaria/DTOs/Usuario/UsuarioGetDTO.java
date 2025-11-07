@@ -19,7 +19,7 @@ public class UsuarioGetDTO {
 
     private RolEmpleado rol;
 
-    private Boolean activo;
+    private boolean activo;
 
     private List<UsuarioVentaDTO> ventas;
 

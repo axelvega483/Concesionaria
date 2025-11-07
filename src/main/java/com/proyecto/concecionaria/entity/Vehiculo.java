@@ -78,8 +78,7 @@ public class Vehiculo implements Serializable {
     @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Imagen> imagenes = new ArrayList<>();
 
-    @Column(nullable = false)
-    private Boolean activo = true;
+    private boolean activo;
 
     @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore

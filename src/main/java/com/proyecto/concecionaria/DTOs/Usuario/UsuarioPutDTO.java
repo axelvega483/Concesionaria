@@ -19,8 +19,6 @@ public class UsuarioPutDTO {
 
     private RolEmpleado rol;
 
-    private Boolean activo;
-
     private List<Integer> ventasId;
 
 }

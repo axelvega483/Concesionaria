@@ -1,5 +1,8 @@
 package com.proyecto.concecionaria.interfaz;
 
+import com.proyecto.concecionaria.DTOs.Usuario.UsuarioGetDTO;
+import com.proyecto.concecionaria.DTOs.Usuario.UsuarioPostDTO;
+import com.proyecto.concecionaria.DTOs.Usuario.UsuarioPutDTO;
 import com.proyecto.concecionaria.entity.Usuario;
 
 import java.util.List;
@@ -7,15 +10,19 @@ import java.util.Optional;
 
 public interface UsuarioInterfaz {
 
-    public Usuario guardar(Usuario usuario);
+    Usuario guardar(Usuario usuario);
 
-    public Optional<Usuario> obtener(Integer id);
+    UsuarioGetDTO crear(UsuarioPostDTO post);
 
-    public List<Usuario> listar();
+    Optional<UsuarioGetDTO> obtener(Integer id);
 
-    public void eliminar(Integer id);
+    List<UsuarioGetDTO> listar();
 
-    public Optional<Usuario> findByCorreoAndPasswoed(String email, String password);
+    UsuarioGetDTO actualizar(Integer id, UsuarioPutDTO put);
 
-    public Boolean existe(String dni);
+    UsuarioGetDTO eliminar(Integer id);
+
+    Optional<UsuarioGetDTO> findByCorreoAndPassword(String email, String password);
+
+    Boolean existe(String dni);
 }

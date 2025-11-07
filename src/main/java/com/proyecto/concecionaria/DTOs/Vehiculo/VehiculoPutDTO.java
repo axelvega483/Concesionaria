@@ -2,7 +2,6 @@ package com.proyecto.concecionaria.DTOs.Vehiculo;
 
 import com.proyecto.concecionaria.util.EstadoVehiculo;
 import com.proyecto.concecionaria.util.TipoVehiculo;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +18,4 @@ public class VehiculoPutDTO {
     private TipoVehiculo tipo;
     private EstadoVehiculo estado;
     private Integer kilometraje;
-    private Boolean activo;
-    private List<Integer> detalleVentasId;
-
 }

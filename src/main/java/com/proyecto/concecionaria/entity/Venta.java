@@ -19,9 +19,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -48,40 +45,35 @@ public class Venta implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull(message = "La fecha de la venta no puede estar vacía")
-    @Column(nullable = false)
     private LocalDate fecha;
 
-    @NotNull(message = "El total no puede estar vacío")
-    @PositiveOrZero(message = "El total debe ser mayor o igual a cero")
+
     @Column(nullable = false)
     private BigDecimal total;
 
-    @NotNull(message = "La frecuencia de pago no puede estar vacía")
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private FrecuenciaPago frecuenciaPago;
 
-    @NotNull(message = "Debe incluir al menos un detalle de venta")
-    @Size(min = 1, message = "Debe haber al menos un producto en la venta")
+
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("venta")
     private List<DetalleVenta> detalleVentas = new ArrayList<>();
 
-    @NotNull(message = "La venta debe estar asociada a un cliente")
+
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
     @JsonIgnoreProperties("ventas")
     private Cliente cliente;
 
-    @NotNull(message = "La venta debe ser registrada por un empleado")
+
     @ManyToOne
     @JoinColumn(name = "empleado_id", nullable = false)
     @JsonIgnoreProperties("ventas")
     private Usuario empleado;
 
-    @NotNull(message = "Debe incluir al menos un pago de venta")
-    @Size(min = 1, message = "Debe haber al menos un pago en la venta")
+
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("venta")
     private List<Pagos> pagos = new ArrayList<>();
@@ -96,8 +88,7 @@ public class Venta implements Serializable {
     @Column
     private Integer cuotas;
 
-    @Column(nullable = false)
-    private Boolean activo = true;
+    private boolean activo;
 
     public void agregarPago(Pagos pago) {
         pagos.add(pago);

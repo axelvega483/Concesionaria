@@ -1,16 +1,17 @@
 package com.proyecto.concecionaria.controller;
 
 import com.proyecto.concecionaria.DTOs.Cliente.ClienteGetDTO;
-import com.proyecto.concecionaria.DTOs.Cliente.ClienteMapper;
 import com.proyecto.concecionaria.DTOs.Cliente.ClientePostDTO;
 import com.proyecto.concecionaria.DTOs.Cliente.ClientePutDTO;
-import com.proyecto.concecionaria.entity.Cliente;
-import com.proyecto.concecionaria.entity.Venta;
-import com.proyecto.concecionaria.service.ClienteService;
-import com.proyecto.concecionaria.service.VentaService;
-import com.proyecto.concecionaria.util.ApiResponse;
+import com.proyecto.concecionaria.interfaz.ClienteInterfaz;
+import com.proyecto.concecionaria.util.CustomApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,100 +31,79 @@ import org.springframework.web.bind.annotation.RestController;
 public class ClienteController {
 
     @Autowired
-    private ClienteService clienteService;
-    @Autowired
-    private VentaService ventaService;
+    private ClienteInterfaz clienteService;
 
+    @Operation(summary = "Listar todos los clientes", description = "Devuelve una lista con todos los clientes registrados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Clientes listados correctamente"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @GetMapping
     public ResponseEntity<?> listarCliente() {
-        try {
-            List<ClienteGetDTO> dto = clienteService.listar()
-                    .stream()
-                    .map(ClienteMapper::toDTO)
-                    .toList();
-            return new ResponseEntity<>(new ApiResponse<>("Lista de Clientes", dto, true), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<ClienteGetDTO> dto = clienteService.listar();
+        return new ResponseEntity<>(new CustomApiResponse<>("Lista de Clientes", dto, true), HttpStatus.OK);
     }
 
+    @Operation(summary = "Obtener cliente por ID", description = "Devuelve un cliente específico basado en su ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cliente encontrado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Cliente no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @GetMapping("{id}")
-    public ResponseEntity<?> obtenerCliente(@PathVariable Integer id) {
-        try {
-            Cliente cliente = clienteService.obtener(id).orElse(null);
-            if (cliente != null) {
-                ClienteGetDTO dto = ClienteMapper.toDTO(cliente);
-                return new ResponseEntity<>(new ApiResponse<>("Cliente encontrado ", dto, true), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(new ApiResponse<>("Cliente no encontrado ", null, false), HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> obtenerCliente(
+            @Parameter(description = "ID del cliente a buscar", example = "1", required = true)
+            @PathVariable Integer id) {
+        ClienteGetDTO dto = clienteService.obtener(id).orElse(null);
+        if (dto != null) {
+            return new ResponseEntity<>(new CustomApiResponse<>("Cliente encontrado", dto, true), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new CustomApiResponse<>("Cliente no encontrado", null, false), HttpStatus.NOT_FOUND);
         }
     }
 
+    @Operation(summary = "Crear nuevo cliente", description = "Crea un nuevo cliente en el sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cliente creado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @PostMapping
-    public ResponseEntity<?> crearCliente(@Valid @RequestBody ClientePostDTO clienteDTO) {
-        try {
-            if (clienteService.existe(clienteDTO.getDni())) {
-                return new ResponseEntity<>(new ApiResponse<>("Error!! El cliente ya existe", clienteDTO, false), HttpStatus.CONFLICT);
-            }
-            List<Venta> ventas = ventaService.obtenerById(clienteDTO.getVentasId());
-            if (ventas.size() != clienteDTO.getVentasId().size()) {
-                return new ResponseEntity<>(new ApiResponse<>("Una o más ventas no existen", null, false), HttpStatus.BAD_REQUEST);
-            }
-
-            Cliente cliente = new Cliente();
-            cliente.setActivo(Boolean.TRUE);
-            cliente.setDni(clienteDTO.getDni());
-            cliente.setEmail(clienteDTO.getEmail());
-            cliente.setNombre(clienteDTO.getNombre());
-            cliente.setVentas(ventas);
-            ClienteGetDTO dto = ClienteMapper.toDTO(clienteService.guardar(cliente));
-            return new ResponseEntity<>(new ApiResponse<>("Cliente creado", dto, true), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> crearCliente(
+            @Parameter(description = "Datos del cliente a crear", required = true)
+            @Valid @RequestBody ClientePostDTO clienteDTO) {
+        ClienteGetDTO dto = clienteService.crear(clienteDTO);
+        return new ResponseEntity<>(new CustomApiResponse<>("Cliente creado", dto, true), HttpStatus.OK);
     }
 
+    @Operation(summary = "Actualizar cliente existente", description = "Actualiza la información de un cliente existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cliente actualizado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Cliente no encontrado"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @PutMapping("{id}")
-    public ResponseEntity<?> ActualizarCliente(@PathVariable Integer id, @RequestBody ClientePutDTO clienteDTO) {
-        try {
-            Cliente cliente = clienteService.obtener(id).orElse(null);
-            if (cliente != null) {
-                List<Venta> ventas = ventaService.obtenerById(clienteDTO.getVentasId());
-                if (ventas.size() != clienteDTO.getVentasId().size()) {
-                    return new ResponseEntity<>(new ApiResponse<>("Una o más ventas no existen", null, false), HttpStatus.BAD_REQUEST);
-                }
-
-                cliente.setActivo(Boolean.TRUE);
-                cliente.setDni(clienteDTO.getDni());
-                cliente.setEmail(clienteDTO.getEmail());
-                cliente.setNombre(clienteDTO.getNombre());
-                cliente.setVentas(ventas);
-                ClienteGetDTO dto = ClienteMapper.toDTO(clienteService.guardar(cliente));
-                return new ResponseEntity<>(new ApiResponse<>("Cliente actualizado", dto, true), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(new ApiResponse<>("Cliente no encontrado", null, false), HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> actualizarCliente(
+            @Parameter(description = "ID del cliente a actualizar", example = "1", required = true)
+            @PathVariable Integer id,
+            @Parameter(description = "Datos actualizados del cliente", required = true)
+            @RequestBody ClientePutDTO clienteDTO) {
+        ClienteGetDTO dto = clienteService.actualizar(id, clienteDTO);
+        return new ResponseEntity<>(new CustomApiResponse<>("Cliente actualizado", dto, true), HttpStatus.OK);
     }
 
+    @Operation(summary = "Eliminar cliente", description = "Elimina un cliente del sistema basado en su ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cliente eliminado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Cliente no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @DeleteMapping("{id}")
-    public ResponseEntity<?> eliminarCliente(@PathVariable Integer id) {
-        try {
-            Cliente cliente = clienteService.obtener(id).orElse(null);
-            if (cliente != null) {
-                clienteService.eliminar(cliente.getId());
-                ClienteGetDTO dto = ClienteMapper.toDTO(cliente);
-                return new ResponseEntity<>(new ApiResponse<>("Cliente eliminado", dto, true), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(new ApiResponse<>("Cliente no encontrado", null, false), HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse<>("Error: " + e.getMessage(), null, false), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> eliminarCliente(
+            @Parameter(description = "ID del cliente a eliminar", example = "1", required = true)
+            @PathVariable Integer id) {
+        ClienteGetDTO dto = clienteService.eliminar(id);
+        return new ResponseEntity<>(new CustomApiResponse<>("Cliente eliminado", dto, true), HttpStatus.OK);
     }
 }

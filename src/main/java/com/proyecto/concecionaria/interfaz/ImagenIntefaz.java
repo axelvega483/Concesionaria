@@ -6,11 +6,10 @@ import java.util.Optional;
 
 
 public interface ImagenIntefaz {
-     public Imagen guardar(Imagen imagen);
 
-    public Optional<Imagen> obtener(Integer id);
+     Optional<Imagen> obtener(Integer id);
 
-    public List<Imagen> listar();
+     List<Imagen> listar();
 
-    public void eliminar(Integer id);
+     void eliminar(Integer id);
 }

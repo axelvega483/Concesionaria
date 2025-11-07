@@ -15,10 +15,6 @@ public class ImagenService implements ImagenIntefaz {
     @Autowired
     private ImagenRepository repo;
 
-    @Override
-    public Imagen guardar(Imagen imagen) {
-        return repo.save(imagen);
-    }
 
     @Override
     public Optional<Imagen> obtener(Integer id) {

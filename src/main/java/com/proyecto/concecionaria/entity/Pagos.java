@@ -58,8 +58,7 @@ public class Pagos implements Serializable {
     @Column(name = "estado", nullable = false)
     private EstadoPagos estado;
 
-    @Column(nullable = false)
-    private Boolean activo = true;
+    private boolean activo;
 
     public void confirmarPago() {
         this.estado = EstadoPagos.PAGADO;

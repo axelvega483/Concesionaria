@@ -1,7 +1,8 @@
 package com.proyecto.concecionaria;
 
+import com.proyecto.concecionaria.DTOs.Usuario.UsuarioGetDTO;
 import com.proyecto.concecionaria.entity.Usuario;
-import com.proyecto.concecionaria.service.UsuarioService;
+import com.proyecto.concecionaria.interfaz.UsuarioInterfaz;
 import com.proyecto.concecionaria.util.RolEmpleado;
 import java.util.List;
 import org.springframework.boot.CommandLineRunner;
@@ -17,18 +18,18 @@ public class ConcecionariaApplication {
     }
 
     @Bean
-    CommandLineRunner initDatabase(UsuarioService usuarioService
+    CommandLineRunner initDatabase(UsuarioInterfaz usuarioService
     ) {
         return args -> {
-            List<Usuario> usuarios = usuarioService.listar();
+            List<UsuarioGetDTO> usuarios = usuarioService.listar();
             if (usuarios.isEmpty()) {
                 Usuario usuarioADMIN = new Usuario();
                 usuarioADMIN.setRol(RolEmpleado.ADMIN);
                 usuarioADMIN.setNombre("ADMIN");
                 usuarioADMIN.setPassword("admin");
                 usuarioADMIN.setEmail("admin@admin.com");
-                usuarioADMIN.setDni("0");
-
+                usuarioADMIN.setDni("12345678");
+                usuarioADMIN.setActivo(true);
                 usuarioService.guardar(usuarioADMIN);
                 System.out.println("Usuario administrador inicializado con éxito.");
             }

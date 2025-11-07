@@ -14,8 +14,5 @@ public class ClientePutDTO {
 
     private String dni;
 
-    private Boolean activo;
-
-    private List<Integer> ventasId;
 
 }

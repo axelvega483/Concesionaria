@@ -40,37 +40,30 @@ public class Usuario implements Serializable {
     @Column(name = "id")
     private Integer id;
 
-    @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres")
-    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$", message = "El nombre solo puede contener letras")
-    @NotNull(message = "El nombre no puede estar vacio")
+
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @Email(message = "El email debe ser válido")
-    @NotNull(message = "El email no puede estar vacío")
+
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
-    @NotNull(message = "El password no puede estar vacio")
+
     @Column(name = "password", nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @Pattern(regexp = "\\d{7,8}", message = "El DNI debe tener entre 7 y 8 dígitos")
-    @NotNull(message = "El dni no puede estar vacío")
+
     @Column(name = "dni", unique = true, nullable = false)
     private String dni;
 
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "El rol no puede estar vacío")
     @Column(name = "rol", nullable = false)
     private RolEmpleado rol;
 
-    @Column(nullable = false)
-    private Boolean activo = true;
+    private boolean activo;
 
-    @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Venta> ventas = new ArrayList<>();
 

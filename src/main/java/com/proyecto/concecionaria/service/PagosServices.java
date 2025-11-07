@@ -1,11 +1,11 @@
 package com.proyecto.concecionaria.service;
 
+import com.proyecto.concecionaria.DTOs.Pagos.PagosGetDTO;
+import com.proyecto.concecionaria.DTOs.Pagos.PagosMapper;
+import com.proyecto.concecionaria.DTOs.Pagos.PagosPutDTO;
 import com.proyecto.concecionaria.entity.Pagos;
 import com.proyecto.concecionaria.interfaz.PagosInterfaz;
 import com.proyecto.concecionaria.repository.PagosRepository;
-import com.proyecto.concecionaria.util.EstadoPagos;
-import com.proyecto.concecionaria.util.EstadoVenta;
-import com.proyecto.concecionaria.util.MetodoPago;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,34 +16,44 @@ import java.util.Optional;
 public class PagosServices implements PagosInterfaz {
     @Autowired
     private PagosRepository repo;
+    @Autowired
+    private PagosMapper mapper;
 
     @Override
-    public Optional<Pagos> findById(Integer id) {
-        return repo.findById(id);
+    public Optional<PagosGetDTO> findById(Integer id) {
+        return repo.findById(id).filter(Pagos::isActivo).map(mapper::toDTO);
     }
 
     @Override
-    public List<Pagos> findByAll() {
-        return repo.findAll();
+    public List<PagosGetDTO> findByAll() {
+        return mapper.toList(repo.findAll());
     }
 
     @Override
-    public void cancelar(Integer id) {
-        Optional<Pagos> pagosOptional = findById(id);
-        if(pagosOptional.isPresent()){
-            Pagos pago = pagosOptional.get();
-            pago.setMetodoPago(MetodoPago.PENDIENTE);
-            pago.setFechaPago(null);
-            pago.setEstado(EstadoPagos.PENDIENTE);
-            pago.setActivo(Boolean.TRUE);
-            pago.getVenta().setEstado(EstadoVenta.ACTIVO);
-            pago.getVenta().setActivo(Boolean.TRUE);
-            repo.save(pago);
-        }
+    public PagosGetDTO cancelar(Integer id) {
+        Pagos pago = repo.findById(id).filter(Pagos::isActivo)
+                .orElseThrow(() -> new IllegalArgumentException("Pago no encontrado con ID: " + id));
+        Pagos pagoCancelado = mapper.cancelar(pago);
+        Pagos pagoGuardado = repo.save(pagoCancelado);
+        return mapper.toDTO(pagoGuardado);
     }
 
     @Override
     public Pagos save(Pagos pagos) {
         return repo.save(pagos);
+    }
+
+    @Override
+    public PagosGetDTO confirmarPago(Integer id, PagosPutDTO putDTO) {
+        Pagos pagos = repo.findById(id).filter(Pagos::isActivo)
+                .orElseThrow(() -> new IllegalArgumentException("Pago no encontrado con ID: " + id));
+        Pagos pagoConfirmado = mapper.confimar(pagos, putDTO);
+        Pagos pagoGuardado = repo.save(pagoConfirmado);
+        return mapper.toDTO(pagoGuardado);
+    }
+
+    @Override
+    public Optional<Pagos> findEntityById(Integer id) {
+        return repo.findById(id).filter(Pagos::isActivo);
     }
 }
