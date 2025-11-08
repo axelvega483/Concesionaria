@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.apache.commons.io.FilenameUtils;
 
@@ -33,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("vehiculo")
+@Tag(name = "Vehiculo", description = "Controlador para operaciones de vehículos")
 public class VehiculoController {
 
     @Autowired

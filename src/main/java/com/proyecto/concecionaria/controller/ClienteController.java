@@ -6,6 +6,7 @@ import com.proyecto.concecionaria.DTOs.Cliente.ClientePutDTO;
 import com.proyecto.concecionaria.interfaz.ClienteInterfaz;
 import com.proyecto.concecionaria.util.CustomApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("cliente")
+@Tag(name = "Clientes", description = "Controlador para operaciones de clientes")
 public class ClienteController {
 
     @Autowired
