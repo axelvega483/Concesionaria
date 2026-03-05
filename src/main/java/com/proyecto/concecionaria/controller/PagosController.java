@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("pagos")
-@Tag(name = "PAgos", description = "Controlador para operaciones de pagos")
+@Tag(name = "Pagos", description = "Controlador para operaciones de pagos")
 public class PagosController {
 
     @Autowired

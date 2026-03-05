@@ -12,7 +12,7 @@
   <a href="http://localhost:8080/swagger-ui/index.html">
     <img src="https://img.shields.io/badge/Documentación-SwaggerUI-brightgreen?style=for-the-badge&logo=swagger" alt="Swagger UI">
   </a>
-  <a href="http://localhost:8080/v3/api-docs">
+  <a href="http://localhost:8080/api-docs">
     <img src="https://img.shields.io/badge/API-OpenAPI3-orange?style=for-the-badge&logo=openapi-initiative" alt="OpenAPI 3">
   </a>
   <img src="https://img.shields.io/badge/Java-17-blue?style=for-the-badge&logo=openjdk" alt="Java 17">
@@ -118,7 +118,7 @@
 | Recurso | Enlace | Descripción |
 |---------|--------|-------------|
 | **📖 Swagger UI** | [Swagger](http://localhost:8080/swagger-ui/index.html) | Documentación interactiva completa |
-| **📑 OpenAPI JSON** | http://localhost:8080/v3/api-docs | Especificación técnica de la API |
+| **📑 OpenAPI JSON** | http://localhost:8080/api-docs | Especificación técnica de la API |
 
 </div>
 
