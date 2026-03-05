@@ -87,10 +87,4 @@ public class UsuarioService implements UsuarioInterfaz {
         return repo.findByDniAndActivo(dni).isPresent();
     }
 
-    @Override
-    public Optional<UsuarioGetDTO> obtenerPorEmail(String email) {
-        return repo.findByEmail(email)
-                .filter(Usuario::isActivo)
-                .map(mapper::toDTO);
-    }
 }

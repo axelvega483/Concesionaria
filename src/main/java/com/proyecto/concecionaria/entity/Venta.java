@@ -76,7 +76,7 @@ public class Venta implements Serializable {
     private List<Pagos> pagos = new ArrayList<>();
 
     @Column
-    private Double entrega; // porcentaje
+    private Double entrega;
 
     @Column(name = "estado", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -92,8 +92,8 @@ public class Venta implements Serializable {
         pago.setVenta(this);
     }
     public void limpiarPagos() {
-        pagos.forEach(p -> p.setVenta(null)); // Romper vínculo
-        pagos.clear(); // Limpiar lista
+        pagos.forEach(p -> p.setVenta(null));
+        pagos.clear();
     }
 
     public void generarPagos() {
@@ -135,7 +135,7 @@ public class Venta implements Serializable {
             Pagos cuota = new Pagos();
             cuota.setFechaPago(fechaPago.plusMonths(i + 1));
 
-            // Ajustar la última cuota si hay diferencia por redondeo
+
             if (i == cantidadCuotas - 1) {
                 BigDecimal montoUltimaCuota = montoRestante.subtract(sumaCuotas);
                 cuota.setMonto(montoUltimaCuota);

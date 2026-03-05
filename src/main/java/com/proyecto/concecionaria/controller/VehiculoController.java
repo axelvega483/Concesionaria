@@ -49,7 +49,7 @@ public class VehiculoController {
     @Operation(summary = "Listar todos los vehículos", description = "Obtiene una lista de todos los vehículos activos en el sistema")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Vehículos listados correctamente"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
     @GetMapping
-    public ResponseEntity<?> listarVehiculos() {
+    public ResponseEntity<?> findAll() {
         List<VehiculoGetDTO> dto = vehiculoService.listar();
         return new ResponseEntity<>(new CustomApiResponse<>("Listado de vehículos obtenido correctamente", dto, true), HttpStatus.OK);
     }
@@ -57,7 +57,7 @@ public class VehiculoController {
     @Operation(summary = "Obtener vehículo por ID", description = "Busca un vehículo específico por su ID")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Vehículo encontrado exitosamente"), @ApiResponse(responseCode = "404", description = "Vehículo no encontrado"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
     @GetMapping("{id}")
-    public ResponseEntity<?> obtenerVehiculo(@Parameter(description = "ID del vehículo a buscar", example = "1", required = true) @PathVariable Integer id) {
+    public ResponseEntity<?> findById(@Parameter(description = "ID del vehículo a buscar", example = "1", required = true) @PathVariable Integer id) {
         Optional<VehiculoGetDTO> dto = vehiculoService.obtener(id);
         if (dto.isPresent()) {
             return new ResponseEntity<>(new CustomApiResponse<>("Vehículo encontrado", dto.get(), true), HttpStatus.OK);
@@ -96,7 +96,7 @@ public class VehiculoController {
     @Operation(summary = "Crear nuevo vehículo", description = "Crea un nuevo vehículo en el sistema. Si ya existe uno con misma marca, modelo y año, actualiza el stock")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Vehículo creado o stock actualizado exitosamente"), @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
     @PostMapping
-    public ResponseEntity<?> crearVehiculo(@Parameter(description = "Datos del vehículo a crear", required = true) @Valid @RequestBody VehiculoPostDTO vehiculoDTO) {
+    public ResponseEntity<?> create(@Parameter(description = "Datos del vehículo a crear", required = true) @Valid @RequestBody VehiculoPostDTO vehiculoDTO) {
         VehiculoGetDTO dto = vehiculoService.crear(vehiculoDTO);
         return new ResponseEntity<>(new CustomApiResponse<>("Vehículo procesado exitosamente", dto, true), HttpStatus.OK);
     }
@@ -117,7 +117,6 @@ public class VehiculoController {
             Files.createDirectories(directorioPath);
         }
 
-        // Eliminar archivos antiguos (si quieres reemplazar todas las imágenes)
         if (vehiculo.getImagenes() != null) {
             for (Imagen img : vehiculo.getImagenes()) {
                 Files.deleteIfExists(directorioPath.resolve(img.getNombre()));
@@ -150,7 +149,7 @@ public class VehiculoController {
     @Operation(summary = "Actualizar vehículo", description = "Actualiza la información de un vehículo existente")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Vehículo actualizado exitosamente"), @ApiResponse(responseCode = "404", description = "Vehículo no encontrado"), @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
     @PutMapping("{id}")
-    public ResponseEntity<?> actualizarVehiculo(@Parameter(description = "ID del vehículo a actualizar", example = "1", required = true) @PathVariable Integer id, @Parameter(description = "Datos actualizados del vehículo", required = true) @RequestBody VehiculoPutDTO vehiculoDTO) {
+    public ResponseEntity<?> update(@Parameter(description = "ID del vehículo a actualizar", example = "1", required = true) @PathVariable Integer id, @Parameter(description = "Datos actualizados del vehículo", required = true) @RequestBody VehiculoPutDTO vehiculoDTO) {
         VehiculoGetDTO dto = vehiculoService.actualizar(id, vehiculoDTO);
         return new ResponseEntity<>(new CustomApiResponse<>("Vehículo actualizado exitosamente", dto, true), HttpStatus.OK);
     }
@@ -158,7 +157,7 @@ public class VehiculoController {
     @Operation(summary = "Eliminar vehículo", description = "Elimina (desactiva) un vehículo del sistema")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Vehículo eliminado exitosamente"), @ApiResponse(responseCode = "404", description = "Vehículo no encontrado"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
     @DeleteMapping("{id}")
-    public ResponseEntity<?> eliminarVehiculo(@Parameter(description = "ID del vehículo a eliminar", example = "1", required = true) @PathVariable Integer id) {
+    public ResponseEntity<?> delete(@Parameter(description = "ID del vehículo a eliminar", example = "1", required = true) @PathVariable Integer id) {
         VehiculoGetDTO dto = vehiculoService.eliminar(id);
         return new ResponseEntity<>(new CustomApiResponse<>("Vehículo eliminado exitosamente", dto, true), HttpStatus.OK);
     }
@@ -180,11 +179,10 @@ public class VehiculoController {
             return new ResponseEntity<>(new CustomApiResponse<>("Imagen no encontrada en este vehículo", null, false), HttpStatus.NOT_FOUND);
         }
 
-        // Eliminar físicamente el archivo
+
         Path ruta = Paths.get(rutaImagenes).resolve(imagen.getNombre()).toAbsolutePath();
         Files.deleteIfExists(ruta);
 
-        // Eliminar de la relación con el vehículo
         vehiculo.getImagenes().remove(imagen);
         VehiculoGetDTO dto = vehiculoService.guardar(vehiculo);
 

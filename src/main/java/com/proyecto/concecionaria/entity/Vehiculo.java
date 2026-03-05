@@ -83,8 +83,4 @@ public class Vehiculo implements Serializable {
     @JsonIgnore
     private List<DetalleVenta> detalleVentas = new ArrayList<>();
 
-    public void addImagen(Imagen imagen) {
-        imagen.setVehiculo(this);
-        this.imagenes.add(imagen);
-    }
 }

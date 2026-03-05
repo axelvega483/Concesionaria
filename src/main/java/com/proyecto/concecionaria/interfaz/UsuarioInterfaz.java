@@ -22,7 +22,5 @@ public interface UsuarioInterfaz {
 
     UsuarioGetDTO eliminar(Integer id);
 
-    Optional<UsuarioGetDTO> obtenerPorEmail(String email);
-
     Boolean existe(String dni);
 }

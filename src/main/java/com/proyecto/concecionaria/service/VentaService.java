@@ -14,7 +14,6 @@ import com.proyecto.concecionaria.repository.VentaRepository;
 import java.util.List;
 import java.util.Optional;
 
-import com.proyecto.concecionaria.util.EstadoPagos;
 import com.proyecto.concecionaria.util.EstadoVenta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,18 +94,16 @@ public class VentaService implements VentaInterfaz {
         revertirStockVehiculos(venta.getDetalleVentas());
         venta.limpiarPagos();
 
-        // 1. Limpiar relaciones y GUARDAR los cambios
         Cliente cliente = venta.getCliente();
         Usuario empleado = venta.getEmpleado();
 
         limpiarRelacionesBidireccionales(venta);
 
-        // 2. Guardar cliente y usuario para persistir los cambios
         if (cliente != null) {
-            clienterepo.save(cliente); // ✅ GUARDAR los cambios en cliente
+            clienterepo.save(cliente);
         }
         if (empleado != null) {
-            userepo.save(empleado); // ✅ GUARDAR los cambios en usuario
+            userepo.save(empleado);
         }
 
         repo.save(venta);
@@ -122,24 +119,23 @@ public class VentaService implements VentaInterfaz {
     }
 
     private void limpiarRelacionesBidireccionales(Venta venta) {
-        // Limpiar relación con cliente
+
         if (venta.getCliente() != null) {
             boolean removed = venta.getCliente().getVentas().removeIf(v -> v.getId().equals(venta.getId()));
             System.out.println("Cliente ventas removidas: " + removed);
         }
 
-        // Limpiar relación con empleado
+
         if (venta.getEmpleado() != null) {
             boolean removed = venta.getEmpleado().getVentas().removeIf(v -> v.getId().equals(venta.getId()));
             System.out.println("Empleado ventas removidas: " + removed);
         }
 
-        // Limpiar relación con vehículos en los detalles
         venta.getDetalleVentas().forEach(detalle -> {
             if (detalle.getVehiculo() != null) {
                 boolean removed = detalle.getVehiculo().getDetalleVentas().removeIf(d -> d.getId().equals(detalle.getId()));
                 System.out.println("Vehículo detalles removidos: " + removed);
-                vehiculoRepo.save(detalle.getVehiculo()); // ✅ Guardar vehículo también
+                vehiculoRepo.save(detalle.getVehiculo());
             }
         });
     }

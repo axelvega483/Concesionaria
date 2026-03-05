@@ -39,11 +39,6 @@ public class PagosServices implements PagosInterfaz {
     }
 
     @Override
-    public Pagos save(Pagos pagos) {
-        return repo.save(pagos);
-    }
-
-    @Override
     public PagosGetDTO confirmarPago(Integer id, PagosPutDTO putDTO) {
         Pagos pagos = repo.findById(id).filter(Pagos::isActivo)
                 .orElseThrow(() -> new IllegalArgumentException("Pago no encontrado con ID: " + id));

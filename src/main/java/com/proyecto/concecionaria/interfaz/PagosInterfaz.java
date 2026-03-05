@@ -15,7 +15,6 @@ public interface PagosInterfaz {
 
     PagosGetDTO cancelar(Integer id);
 
-    Pagos save(Pagos pagos);
 
     PagosGetDTO confirmarPago(Integer id, PagosPutDTO putDTO);
 
