@@ -134,7 +134,7 @@
 | **📐 Arquitectura** | Separación Controller-Service-Repository | ✅ Implementado |
 | **💻 Código Limpio** | Principios SOLID y buenas prácticas | ✅ Implementado |
 | **📊 Integridad de Datos** | Validaciones robustas y control de consistencia | ✅ Implementado |
-| **🚀 Escalabilidad** | Preparado para JWT, frontend o microservicios | ✅ Preparado |
+| **🚀 Escalabilidad** | Preparado para frontend o microservicios | ✅ Preparado |
 
 </div>
 
