@@ -49,7 +49,7 @@
 - ✔ Encriptación de contraseñas (BCrypt)
 - ✔ Autorización basada en roles (`ADMIN`, `VENDEDOR`)
 - ✔ Restricción de acceso según permisos
-- ✔ Preparado para evolución a autenticación stateless con JWT
+- ✔ Autenticación stateless con JWT
 
 ### Ejemplo de acceso:
 
