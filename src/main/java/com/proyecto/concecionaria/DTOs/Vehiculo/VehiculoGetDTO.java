@@ -3,25 +3,19 @@ package com.proyecto.concecionaria.DTOs.Vehiculo;
 import com.proyecto.concecionaria.util.EstadoVehiculo;
 import com.proyecto.concecionaria.util.TipoVehiculo;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-public class VehiculoGetDTO {
-
-    private Integer id;
-    private String marca;
-    private String modelo;
-    private Integer anioModelo;
-    private Double precio;
-    private Integer stock;
-    private String color;
-    private TipoVehiculo tipo;
-    private EstadoVehiculo estado;
-    private Integer kilometraje;
-    private List<String> imagenes;
-    private Boolean activo;
-    private List<VehiculoVentaDetalleDTO> detalleVentas;
+public record VehiculoGetDTO(Integer id,
+         String marca,
+         String modelo,
+         Integer anioModelo,
+         Double precio,
+         Integer stock,
+         String color,
+         TipoVehiculo tipo,
+         EstadoVehiculo estado,
+         Integer kilometraje,
+         List<String> imagenes,
+         Boolean activo,
+         List<VehiculoVentaDetalleDTO> detalleVentas) {
 
 }

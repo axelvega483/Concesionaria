@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import com.proyecto.concecionaria.repository.VentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,18 +25,22 @@ public class UsuarioService implements UsuarioInterfaz {
     private UsuarioMapper mapper;
     @Autowired
     private VentaRepository ventaRepo;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public Usuario guardar(Usuario usuario) {
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return repo.save(usuario);
     }
 
     @Override
     public UsuarioGetDTO crear(UsuarioPostDTO post) {
-        if (existe(post.getDni())) {
+        if (existe(post.dni())) {
             throw new IllegalArgumentException("El DNI ya está registrado");
         }
         Usuario usuario = mapper.toEntity(post);
+        usuario.setPassword(passwordEncoder.encode(post.password()));
         repo.save(usuario);
         return mapper.toDTO(usuario);
     }
@@ -64,12 +69,15 @@ public class UsuarioService implements UsuarioInterfaz {
         Usuario usuario = repo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-        List<Venta> ventas = ventaRepo.findAllById((put.getVentasId()));
-        if (ventas.size() != put.getVentasId().size()) {
+        List<Venta> ventas = ventaRepo.findAllById((put.ventasId()));
+        if (ventas.size() != put.ventasId().size()) {
             throw new IllegalArgumentException("Una o más ventas no fueron encontradas");
         }
         mapper.fromUpdateDTO(put, usuario, ventas);
         usuario.setActivo(true);
+        if (put.password() != null && !put.password().isEmpty()) {
+            usuario.setPassword(passwordEncoder.encode(put.password()));
+        }
         repo.save(usuario);
         return mapper.toDTO(usuario);
     }
@@ -80,8 +88,9 @@ public class UsuarioService implements UsuarioInterfaz {
     }
 
     @Override
-    public Optional<UsuarioGetDTO> findByCorreoAndPassword(String email, String password) {
-        return repo.findByCorreoAndPassword(email, password).map(mapper::toDTO);
+    public Optional<UsuarioGetDTO> obtenerPorEmail(String email) {
+        return repo.findByEmail(email)
+                .filter(Usuario::isActivo)
+                .map(mapper::toDTO);
     }
-
 }

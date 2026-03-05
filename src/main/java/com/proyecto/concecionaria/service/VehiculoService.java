@@ -28,12 +28,12 @@ public class VehiculoService implements VehiculoInterfaz {
 
     @Override
     public VehiculoGetDTO crear(VehiculoPostDTO post) {
-        Optional<Vehiculo> vehiculoExistente = buscarPorMarcaModeloAnio(post.getMarca(), post.getModelo(), post.getAnioModelo());
+        Optional<Vehiculo> vehiculoExistente = buscarPorMarcaModeloAnio(post.marca(), post.modelo(), post.anioModelo());
 
         if (vehiculoExistente.isPresent()) {
             Vehiculo vehiculo = vehiculoExistente.get();
             Integer stockActual = vehiculo.getStock();
-            vehiculo.setStock(stockActual + post.getStock());
+            vehiculo.setStock(stockActual + post.stock());
             Vehiculo vehiculoActualizado = repo.save(vehiculo);
             return mapper.toDTO(vehiculoActualizado);
         } else {

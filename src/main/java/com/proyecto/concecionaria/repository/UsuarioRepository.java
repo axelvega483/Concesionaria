@@ -13,7 +13,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     @Query("SELECT u FROM Usuario u WHERE u.dni = :dni AND u.activo = true")
     Optional<Usuario> findByDniAndActivo(String dni);
 
-    @Query("SELECT u FROM Usuario u WHERE u.email = :email AND u.password = :password AND u.activo = true")
-    Optional<Usuario> findByCorreoAndPassword(String email, String password);
+    Optional<Usuario> findByEmail(String email);
 
+    boolean existsByEmail(String email);
 }

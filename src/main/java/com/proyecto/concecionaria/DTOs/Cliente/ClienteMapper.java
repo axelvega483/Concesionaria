@@ -12,42 +12,39 @@ import java.util.Collections;
 public class ClienteMapper {
 
     public ClienteGetDTO toDTO(Cliente cliente) {
-        ClienteGetDTO dto = new ClienteGetDTO();
-        dto.setId(cliente.getId());
-        dto.setActivo(cliente.isActivo());
-        dto.setDni(cliente.getDni());
-        dto.setEmail(cliente.getEmail());
-        dto.setNombre(cliente.getNombre());
-
         List<ClienteVentaDTO> ventas = Optional.ofNullable(cliente.getVentas()).orElse(Collections.emptyList())
                 .stream().filter(Venta::isActivo).map(venta -> new ClienteVentaDTO(
                         venta.getId(),
                         venta.getFecha(),
                         venta.getTotal())).toList();
-        dto.setVentas(ventas);
+
+        ClienteGetDTO dto = new ClienteGetDTO(cliente.getId(),
+                cliente.getNombre(),
+                cliente.getEmail(),
+                cliente.getDni(),
+                cliente.isActivo(), ventas);
         return dto;
     }
 
     public Cliente toEntity(ClientePostDTO post) {
-        Cliente cliente = new Cliente();
-        cliente.setNombre(post.getNombre());
-        cliente.setDni(post.getDni());
-        cliente.setEmail(post.getEmail());
-        cliente.setActivo(true);
-        return cliente;
+        return Cliente.builder()
+                .nombre(post.nombre())
+                .email(post.email())
+                .dni(post.dni())
+                .activo(true)
+                .build();
     }
 
     public Cliente updateEntityFromDTO(ClientePutDTO put, Cliente cliente) {
-        if (put.getNombre() != null) {
-            cliente.setNombre(put.getNombre());
+        if (put.nombre() != null) {
+            cliente.setNombre(put.nombre());
         }
-        if (put.getDni() != null) {
-            cliente.setDni(put.getDni());
+        if (put.dni() != null) {
+            cliente.setDni(put.dni());
         }
-        if (put.getEmail() != null) {
-            cliente.setEmail(put.getEmail());
+        if (put.email() != null) {
+            cliente.setEmail(put.email());
         }
-
         return cliente;
     }
 

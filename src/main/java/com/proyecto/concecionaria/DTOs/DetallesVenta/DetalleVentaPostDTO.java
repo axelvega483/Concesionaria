@@ -1,19 +1,13 @@
 package com.proyecto.concecionaria.DTOs.DetallesVenta;
 
 import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-public class DetalleVentaPostDTO {
-
-    @NotNull
-    private Integer vehiculoId;
-    @NotNull
-    private Integer cantidad;
-    @NotNull
-    private BigDecimal precioUnitario;
-
+public record DetalleVentaPostDTO(@NotNull
+                                  Integer vehiculoId,
+                                  @NotNull
+                                  Integer cantidad,
+                                  @NotNull
+                                  BigDecimal precioUnitario) {
 }

@@ -37,16 +37,16 @@ public class VentaService implements VentaInterfaz {
 
     @Override
     public VentaGetDTO crear(VentaPostDTO post) {
-        Cliente cliente = clienterepo.findById(post.getClienteId()).orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
+        Cliente cliente = clienterepo.findById(post.clienteId()).orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
 
-        Usuario usuario = userepo.findById(post.getEmpleadoId()).orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
+        Usuario usuario = userepo.findById(post.empleadoId()).orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
 
-        validarStockVehiculos(post.getDetalleVentas());
+        validarStockVehiculos(post.detalleVentas());
 
         Venta venta = mapper.toEntity(post, cliente, usuario);
         repo.save(venta);
 
-        actualizarStockVehiculos(post.getDetalleVentas());
+        actualizarStockVehiculos(post.detalleVentas());
 
         return mapper.toDTO(venta);
     }
@@ -54,19 +54,19 @@ public class VentaService implements VentaInterfaz {
 
     private void validarStockVehiculos(List<DetalleVentaPostDTO> detalles) {
         for (DetalleVentaPostDTO detalle : detalles) {
-            Vehiculo vehiculo = vehiculoRepo.findById(detalle.getVehiculoId()).orElseThrow(() -> new IllegalArgumentException("Vehículo no encontrado con ID: " + detalle.getVehiculoId()));
+            Vehiculo vehiculo = vehiculoRepo.findById(detalle.vehiculoId()).orElseThrow(() -> new IllegalArgumentException("Vehículo no encontrado con ID: " + detalle.vehiculoId()));
 
-            if (vehiculo.getStock() < detalle.getCantidad()) {
-                throw new IllegalArgumentException("Stock insuficiente para el vehículo: " + vehiculo.getMarca() + " " + vehiculo.getModelo() + ". Stock disponible: " + vehiculo.getStock() + ", solicitado: " + detalle.getCantidad());
+            if (vehiculo.getStock() < detalle.cantidad()) {
+                throw new IllegalArgumentException("Stock insuficiente para el vehículo: " + vehiculo.getMarca() + " " + vehiculo.getModelo() + ". Stock disponible: " + vehiculo.getStock() + ", solicitado: " + detalle.cantidad());
             }
         }
     }
 
     private void actualizarStockVehiculos(List<DetalleVentaPostDTO> detalles) {
         for (DetalleVentaPostDTO detalle : detalles) {
-            Vehiculo vehiculo = vehiculoRepo.findById(detalle.getVehiculoId()).orElseThrow(() -> new IllegalArgumentException("Vehículo no encontrado"));
+            Vehiculo vehiculo = vehiculoRepo.findById(detalle.vehiculoId()).orElseThrow(() -> new IllegalArgumentException("Vehículo no encontrado"));
 
-            int nuevoStock = vehiculo.getStock() - detalle.getCantidad();
+            int nuevoStock = vehiculo.getStock() - detalle.cantidad();
             vehiculo.setStock(nuevoStock);
             vehiculoRepo.save(vehiculo);
         }

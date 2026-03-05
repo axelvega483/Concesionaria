@@ -22,7 +22,7 @@ public interface UsuarioInterfaz {
 
     UsuarioGetDTO eliminar(Integer id);
 
-    Optional<UsuarioGetDTO> findByCorreoAndPassword(String email, String password);
+    Optional<UsuarioGetDTO> obtenerPorEmail(String email);
 
     Boolean existe(String dni);
 }

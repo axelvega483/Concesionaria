@@ -13,25 +13,10 @@ import java.util.stream.Collectors;
 public class VehiculoMapper {
 
     public  VehiculoGetDTO toDTO(Vehiculo vehiculo) {
-        VehiculoGetDTO dto = new VehiculoGetDTO();
-        dto.setId(vehiculo.getId());
-        dto.setActivo(vehiculo.isActivo());
-        dto.setAnioModelo(vehiculo.getAnioModelo());
-        dto.setEstado(vehiculo.getEstado());
-        dto.setKilometraje(vehiculo.getKilometraje());
-        dto.setMarca(vehiculo.getMarca());
-        dto.setModelo(vehiculo.getModelo());
-        dto.setPrecio(vehiculo.getPrecio());
-        dto.setStock(vehiculo.getStock());
-        dto.setTipo(vehiculo.getTipo());
-        dto.setColor(vehiculo.getColor());
         List<String> imagenes = Optional.ofNullable(vehiculo.getImagenes()).orElse(Collections.emptyList())
                 .stream()
                 .map(imagen -> "/api/vehiculo/imagen/" + imagen.getId())
                 .collect(Collectors.toList());
-
-        dto.setImagenes(imagenes);
-
         List<VehiculoVentaDetalleDTO> detalles = Optional.ofNullable(vehiculo.getDetalleVentas()).orElse(Collections.emptyList())
                 .stream().filter(detalle -> detalle.getVenta().isActivo())
                 .map(detalle -> new VehiculoVentaDetalleDTO(
@@ -39,56 +24,75 @@ public class VehiculoMapper {
                         detalle.getCantidad(),
                         detalle.getPrecioUnitario()))
                 .toList();
-        dto.setDetalleVentas(detalles);
+
+        VehiculoGetDTO dto = new VehiculoGetDTO(vehiculo.getId(),
+                vehiculo.getMarca(),
+                vehiculo.getModelo(),
+                vehiculo.getAnioModelo(),
+                vehiculo.getPrecio(),
+                vehiculo.getStock(),
+                vehiculo.getColor(),
+                vehiculo.getTipo(),
+                vehiculo.getEstado(),
+                vehiculo.getKilometraje(),
+                imagenes,
+                vehiculo.isActivo(),
+                detalles);
         return dto;
     }
     public Vehiculo toEntity(VehiculoPostDTO post){
-        Vehiculo vehiculo = new Vehiculo();
-        vehiculo.setAnioModelo(post.getAnioModelo());
-        vehiculo.setEstado(post.getEstado());
-        vehiculo.setKilometraje(post.getKilometraje());
-        vehiculo.setMarca(post.getMarca());
-        vehiculo.setModelo(post.getModelo());
-        vehiculo.setPrecio(post.getPrecio());
-        vehiculo.setStock(post.getStock());
-        vehiculo.setTipo(post.getTipo());
-        vehiculo.setActivo(true);
-        vehiculo.setColor(post.getColor());
-        List<String> nombresImagenes = Optional.ofNullable(post.getNombresImagenes()).orElse(Collections.emptyList());
-        for (String nombre : nombresImagenes) {
-            Imagen imagen = new Imagen();
-            imagen.setNombre(nombre);
-            vehiculo.addImagen(imagen);
-        }
-        return vehiculo;
+        List<Imagen> imagenes = Optional.ofNullable(post.nombresImagenes())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(nombre -> {
+                    Imagen imagen = new Imagen();
+                    imagen.setNombre(nombre);
+                    return imagen;
+                })
+                .toList();
+
+        return Vehiculo.builder()
+                .anioModelo(post.anioModelo())
+                .estado(post.estado())
+                .kilometraje(post.kilometraje())
+                .marca(post.marca())
+                .modelo(post.modelo())
+                .precio(post.precio())
+                .stock(post.stock())
+                .tipo(post.tipo())
+                .activo(true)
+                .color(post.color())
+                .imagenes(imagenes)
+                .build();
+
     }
     public Vehiculo updateEntityFromDTO(VehiculoPutDTO put, Vehiculo vehiculo){
-        if(put.getAnioModelo() != null){
-            vehiculo.setAnioModelo(put.getAnioModelo());
+        if(put.anioModelo() != null){
+            vehiculo.setAnioModelo(put.anioModelo());
         }
-        if(put.getEstado() != null){
-            vehiculo.setEstado(put.getEstado());
+        if(put.estado() != null){
+            vehiculo.setEstado(put.estado());
         }
-        if(put.getKilometraje() != null){
-            vehiculo.setKilometraje(put.getKilometraje());
+        if(put.kilometraje() != null){
+            vehiculo.setKilometraje(put.kilometraje());
         }
-        if(put.getMarca() != null){
-            vehiculo.setMarca(put.getMarca());
+        if(put.marca() != null){
+            vehiculo.setMarca(put.marca());
         }
-        if(put.getModelo() != null){
-            vehiculo.setModelo(put.getModelo());
+        if(put.modelo() != null){
+            vehiculo.setModelo(put.modelo());
         }
-        if(put.getPrecio() != null){
-            vehiculo.setPrecio(put.getPrecio());
+        if(put.precio() != null){
+            vehiculo.setPrecio(put.precio());
         }
-        if(put.getStock() != null){
-            vehiculo.setStock(put.getStock());
+        if(put.stock() != null){
+            vehiculo.setStock(put.stock());
         }
-        if(put.getTipo() != null){
-            vehiculo.setTipo(put.getTipo());
+        if(put.tipo() != null){
+            vehiculo.setTipo(put.tipo());
         }
-        if(put.getColor() != null){
-            vehiculo.setColor(put.getColor());
+        if(put.color() != null){
+            vehiculo.setColor(put.color());
         }
         return vehiculo;
     }

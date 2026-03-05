@@ -7,23 +7,20 @@ import com.proyecto.concecionaria.util.FrecuenciaPago;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-public class VentaGetDTO {
+public record VentaGetDTO (
+         Integer id,
+         LocalDate fecha,
+         FrecuenciaPago frecuenciaPago,
+         BigDecimal total,
+         List<VentaDetalleDTO> detalleVentas,
+         Cliente cliente,
+         Usuario empleado,
+         List<VentaPagosDTO> pagos,
+         Boolean activo,
+         Double entrega,
+         EstadoVenta estado,
+         Integer cuotas){
 
-    private Integer id;
-    private LocalDate fecha;
-    private FrecuenciaPago frecuenciaPago;
-    private BigDecimal total;
-    private List<VentaDetalleDTO> detalleVentas;
-    private Cliente cliente;
-    private Usuario empleado;
-    private List<VentaPagosDTO> pagos;
-    private Boolean activo;
-    private Double entrega;
-    private EstadoVenta estado;
-    private Integer cuotas;
+
 }

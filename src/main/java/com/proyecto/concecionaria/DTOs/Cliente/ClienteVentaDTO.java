@@ -2,18 +2,9 @@ package com.proyecto.concecionaria.DTOs.Cliente;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class ClienteVentaDTO {
+public record ClienteVentaDTO( Integer id,
+         LocalDate fecha,
+         BigDecimal total) {
 
-    private Integer id;
-    private LocalDate fecha;
-    private BigDecimal total;
 }

@@ -13,12 +13,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,16 +41,24 @@ public class UsuarioController {
     @Autowired
     private UsuarioInterfaz usuarioService;
 
-    @Operation(summary = "Login de usuario", description = "Autentica un usuario mediante correo y contraseña")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Login exitoso"), @ApiResponse(responseCode = "401", description = "Credenciales inválidas"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Parameter(description = "Credenciales de acceso del usuario", required = true) @Valid  @RequestBody UsuarioPostDTO postDTO) {
-        Optional<UsuarioGetDTO> dto = usuarioService.findByCorreoAndPassword(postDTO.getEmail(), postDTO.getPassword());
-        return new ResponseEntity<>(new CustomApiResponse<>("Login correcto", dto, true), HttpStatus.OK);
-    }
 
+    @Operation(summary = "Información de autenticación",
+            description = "Este endpoint informa que la autenticación se realiza mediante HTTP Basic Auth. " +
+                    "No es necesario llamarlo, solo usar las credenciales en el header Authorization.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Información de autenticación"),
+    })
+    @GetMapping("/auth-info")
+    public ResponseEntity<?> authInfo() {
+        Map<String, String> info = new HashMap<>();
+        info.put("mensaje", "La API usa autenticación HTTP Basic");
+        info.put("instrucciones", "Incluye el header 'Authorization: Basic base64(email:password)' en todas las peticiones");
+        info.put("endpoints_publicos", "/usuario/auth-info, /swagger-ui/**");
+        return new ResponseEntity<>(new CustomApiResponse<>("Información de autenticación", info, true), HttpStatus.OK);
+    }
     @Operation(summary = "Listar todos los usuarios", description = "Obtiene una lista de todos los usuarios registrados en el sistema")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Usuarios listados correctamente"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> listarUsuario() {
         List<UsuarioGetDTO> dto = usuarioService.listar();
@@ -56,6 +67,7 @@ public class UsuarioController {
 
     @Operation(summary = "Obtener usuario por ID", description = "Busca y devuelve un usuario específico basado en su ID")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Usuario encontrado exitosamente"), @ApiResponse(responseCode = "404", description = "Usuario no encontrado"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
+    @PreAuthorize("hasRole('ADMIN') or @usuarioSecurity.isCurrentUser(#id)")
     @GetMapping("{id}")
     public ResponseEntity<?> obtenerUsuario(@Parameter(description = "ID del usuario a buscar", example = "1", required = true) @PathVariable Integer id) {
         UsuarioGetDTO dto = usuarioService.obtener(id).orElse(null);
@@ -64,6 +76,7 @@ public class UsuarioController {
 
     @Operation(summary = "Crear nuevo usuario", description = "Registra un nuevo usuario en el sistema")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Usuario creado exitosamente"), @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"), @ApiResponse(responseCode = "409", description = "El usuario ya existe"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
     public ResponseEntity<?> crearUsuario(@Parameter(description = "Datos del nuevo usuario a registrar", required = true) @Valid @RequestBody UsuarioPostDTO usuarioDTO) {
         UsuarioGetDTO dto = usuarioService.crear(usuarioDTO);
@@ -72,6 +85,7 @@ public class UsuarioController {
 
     @Operation(summary = "Actualizar usuario", description = "Actualiza la información de un usuario existente")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente"), @ApiResponse(responseCode = "404", description = "Usuario no encontrado"), @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
+    @PreAuthorize("hasRole('ADMIN') or @usuarioSecurity.isCurrentUser(#id)")
     @PutMapping("{id}")
     public ResponseEntity<?> actualizarUsuario(@Parameter(description = "ID del usuario a actualizar", example = "1", required = true) @PathVariable Integer id, @Parameter(description = "Datos actualizados del usuario", required = true) @RequestBody UsuarioPutDTO usuarioDTO) {
         UsuarioGetDTO dto = usuarioService.actualizar(id, usuarioDTO);
@@ -80,6 +94,7 @@ public class UsuarioController {
 
     @Operation(summary = "Eliminar/Desactivar usuario", description = "Elimina o desactiva un usuario del sistema (cambia su estado a inactivo)")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Usuario desactivado exitosamente"), @ApiResponse(responseCode = "404", description = "Usuario no encontrado"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<?> eliminarUsuario(@Parameter(description = "ID del usuario a eliminar/desactivar", example = "1", required = true) @PathVariable Integer id) {
         UsuarioGetDTO dto = usuarioService.eliminar(id);

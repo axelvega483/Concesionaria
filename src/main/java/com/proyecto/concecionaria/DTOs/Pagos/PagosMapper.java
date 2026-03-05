@@ -14,21 +14,26 @@ import java.util.List;
 public class PagosMapper {
 
     public PagosGetDTO toDTO(Pagos pagos) {
-        PagosGetDTO dto = new PagosGetDTO();
-        dto.setActivo(pagos.isActivo());
-        dto.setEstado(pagos.getEstado());
-        dto.setFechaPago(pagos.getFechaPago());
-        dto.setId(pagos.getId());
-        dto.setMetodoPago(pagos.getMetodoPago());
-        dto.setMonto(pagos.getMonto());
+
+        PagoVenta ventaDTO = null;
+
         Venta venta = pagos.getVenta();
         if (venta != null) {
-            PagoVenta ventaDTO = new PagoVenta();
-            ventaDTO.setId(venta.getId());
-            ventaDTO.setTotal(venta.getTotal());
-            dto.setVenta(ventaDTO);
+            ventaDTO = new PagoVenta(
+                    venta.getId(),
+                    venta.getTotal()
+            );
         }
-        return dto;
+
+        return new PagosGetDTO(
+                pagos.getId(),
+                pagos.getFechaPago(),
+                pagos.getMetodoPago(),
+                pagos.getMonto(),
+                ventaDTO,
+                pagos.getEstado(),
+                pagos.isActivo()
+        );
     }
 
     public Pagos cancelar(Pagos pago) {
@@ -47,7 +52,7 @@ public class PagosMapper {
 
     public Pagos confimar(Pagos pagos, PagosPutDTO putDTO) {
         pagos.setFechaPago(LocalDate.now());
-        pagos.setMetodoPago(putDTO.getMetodoPago());
+        pagos.setMetodoPago(putDTO.metodoPago());
         pagos.confirmarPago();
         return pagos;
     }

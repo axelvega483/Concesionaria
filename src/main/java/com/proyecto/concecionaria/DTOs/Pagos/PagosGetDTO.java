@@ -5,19 +5,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.proyecto.concecionaria.util.MetodoPago;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-public class PagosGetDTO {
-
-    private Integer id;
-    private LocalDate fechaPago;
-    private MetodoPago metodoPago;
-    private BigDecimal monto;
-    private PagoVenta venta;
-    private EstadoPagos estado;
-    private boolean activo;
+public record PagosGetDTO(Integer id,
+         LocalDate fechaPago,
+         MetodoPago metodoPago,
+         BigDecimal monto,
+         PagoVenta venta,
+         EstadoPagos estado,
+         boolean activo) {
 
 }

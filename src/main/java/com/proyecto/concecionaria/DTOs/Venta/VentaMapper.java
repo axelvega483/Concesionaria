@@ -18,21 +18,7 @@ public class VentaMapper {
     private VehiculoRepository vehiculoRepo;
 
     public VentaGetDTO toDTO(Venta venta) {
-        VentaGetDTO dto = new VentaGetDTO();
-        dto.setActivo(venta.isActivo());
-        dto.setCliente(venta.getCliente());
-        dto.setEmpleado(venta.getEmpleado());
-        dto.setFrecuenciaPago(venta.getFrecuenciaPago());
-        dto.setFecha(venta.getFecha());
-        dto.setId(venta.getId());
-        dto.setTotal(venta.getTotal());
-        dto.setCuotas(venta.getCuotas());
-        dto.setEstado(venta.getEstado());
-        dto.setEntrega(venta.getEntrega());
-
         List<VentaDetalleDTO> detalles = Optional.ofNullable(venta.getDetalleVentas()).orElse(Collections.emptyList()).stream().map(detalle -> new VentaDetalleDTO(detalle.getId(), detalle.getCantidad(), detalle.getPrecioUnitario())).toList();
-        dto.setDetalleVentas(detalles);
-
         List<VentaPagosDTO> pagos = Optional.ofNullable(venta.getPagos()).orElse(Collections.emptyList())
                 .stream().map(pago -> new VentaPagosDTO(
                         pago.getId(),
@@ -40,7 +26,18 @@ public class VentaMapper {
                         pago.getMonto(),
                         pago.getEstado()))
                 .toList();
-        dto.setPagos(pagos);
+        VentaGetDTO dto = new VentaGetDTO(venta.getId(),
+                venta.getFecha(),
+                venta.getFrecuenciaPago(),
+                venta.getTotal(),
+                detalles,
+                venta.getCliente(),
+                venta.getEmpleado(),
+                pagos,
+                venta.isActivo(),
+                venta.getEntrega(),
+                venta.getEstado(),
+                venta.getCuotas());
 
         return dto;
     }
@@ -49,14 +46,14 @@ public class VentaMapper {
         Venta venta = new Venta();
         venta.setCliente(cliente);
         venta.setEmpleado(empleado);
-        venta.setFrecuenciaPago(ventaDTO.getFrecuenciaPago());
+        venta.setFrecuenciaPago(ventaDTO.frecuenciaPago());
         venta.setFecha(LocalDate.now());
-        venta.setTotal(ventaDTO.getTotal());
-        venta.setCuotas(ventaDTO.getCuotas());
-        venta.setEstado(ventaDTO.getEstado());
-        venta.setEntrega(ventaDTO.getEntrega());
+        venta.setTotal(ventaDTO.total());
+        venta.setCuotas(ventaDTO.cuotas());
+        venta.setEstado(ventaDTO.estado());
+        venta.setEntrega(ventaDTO.entrega());
         venta.setActivo(true);
-        venta.setDetalleVentas(mapearDetalles(ventaDTO.getDetalleVentas(), venta));
+        venta.setDetalleVentas(mapearDetalles(ventaDTO.detalleVentas(), venta));
 
         venta.generarPagos();
         return venta;
@@ -69,7 +66,7 @@ public class VentaMapper {
     private List<DetalleVenta> mapearDetalles(List<DetalleVentaPostDTO> detalleDTOs, Venta venta) {
         List<DetalleVenta> detalles = new ArrayList<>();
         for (DetalleVentaPostDTO dto : detalleDTOs) {
-            Integer idVehiculo = dto.getVehiculoId();
+            Integer idVehiculo = dto.vehiculoId();
             if (idVehiculo == null) {
                 throw new IllegalArgumentException("El ID del vehículo no puede ser nulo");
             }
@@ -79,8 +76,8 @@ public class VentaMapper {
             }
             DetalleVenta detalle = new DetalleVenta();
             detalle.setVehiculo(vehiculo);
-            detalle.setCantidad(dto.getCantidad());
-            detalle.setPrecioUnitario(dto.getPrecioUnitario());
+            detalle.setCantidad(dto.cantidad());
+            detalle.setPrecioUnitario(dto.precioUnitario());
             detalle.setVenta(venta);
 
             detalles.add(detalle);

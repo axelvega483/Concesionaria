@@ -5,14 +5,12 @@ import com.proyecto.concecionaria.DTOs.Cliente.ClienteMapper;
 import com.proyecto.concecionaria.DTOs.Cliente.ClientePostDTO;
 import com.proyecto.concecionaria.DTOs.Cliente.ClientePutDTO;
 import com.proyecto.concecionaria.entity.Cliente;
-import com.proyecto.concecionaria.entity.Venta;
 import com.proyecto.concecionaria.interfaz.ClienteInterfaz;
 import com.proyecto.concecionaria.repository.ClienteRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-import com.proyecto.concecionaria.repository.VentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +20,10 @@ public class ClienteService implements ClienteInterfaz {
     private ClienteRepository repo;
     @Autowired
     private ClienteMapper mapper;
-    @Autowired
-    private VentaRepository ventaRepo;
 
     @Override
     public ClienteGetDTO crear(ClientePostDTO post) {
-        if(existe(post.getDni())){
+        if(existe(post.dni())){
             throw new IllegalArgumentException("Ya existe un cliente con ese DNI.");
         }
         Cliente cliente = mapper.toEntity(post);
