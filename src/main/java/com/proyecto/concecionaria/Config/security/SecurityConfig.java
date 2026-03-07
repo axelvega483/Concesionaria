@@ -43,7 +43,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class);
-
         return http.build();
     }
 

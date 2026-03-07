@@ -3,7 +3,6 @@ package com.proyecto.concecionaria.controller;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioGetDTO;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioPostDTO;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioPutDTO;
-import com.proyecto.concecionaria.entity.Usuario;
 import com.proyecto.concecionaria.interfaz.UsuarioInterfaz;
 import com.proyecto.concecionaria.util.CustomApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +15,6 @@ import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,6 +54,7 @@ public class UsuarioController {
         info.put("endpoints_publicos", "/usuario/auth-info, /swagger-ui/**");
         return new ResponseEntity<>(new CustomApiResponse<>("Información de autenticación", info, true), HttpStatus.OK);
     }
+
     @Operation(summary = "Listar todos los usuarios", description = "Obtiene una lista de todos los usuarios registrados en el sistema")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Usuarios listados correctamente"), @ApiResponse(responseCode = "500", description = "Error interno del servidor")})
     @PreAuthorize("hasRole('ADMIN')")
