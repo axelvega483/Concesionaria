@@ -84,7 +84,7 @@ public class UsuarioService implements UsuarioInterfaz {
 
     @Override
     public Boolean existe(String dni) {
-        return repo.findByDniAndActivoTrue(dni);
+        return repo.existsByDniAndActivoTrue(dni);
     }
 
 }

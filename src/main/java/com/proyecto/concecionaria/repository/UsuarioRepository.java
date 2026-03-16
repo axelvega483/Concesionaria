@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
-    boolean findByDniAndActivoTrue(String dni);
+    boolean existsByDniAndActivoTrue(String dni);
 
     Optional<Usuario> findByEmail(String email);
 
