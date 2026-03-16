@@ -38,7 +38,7 @@ public class UsuarioMapper {
                 .build();
     }
 
-    public Usuario fromUpdateDTO(UsuarioPutDTO update, Usuario usuario, List<Venta> ventas) {
+    public void fromUpdateDTO(UsuarioPutDTO update, Usuario usuario, List<Venta> ventas) {
         if (update.dni() != null) {
             usuario.setDni(update.dni());
         }
@@ -57,7 +57,6 @@ public class UsuarioMapper {
         if (ventas != null) {
             usuario.setVentas(ventas);
         }
-        return usuario;
     }
 
     public List<UsuarioGetDTO> toDTOList(List<Usuario> usuarios) {

@@ -35,7 +35,7 @@ public class ClienteMapper {
                 .build();
     }
 
-    public Cliente updateEntityFromDTO(ClientePutDTO put, Cliente cliente) {
+    public void updateEntityFromDTO(ClientePutDTO put, Cliente cliente) {
         if (put.nombre() != null) {
             cliente.setNombre(put.nombre());
         }
@@ -45,7 +45,6 @@ public class ClienteMapper {
         if (put.email() != null) {
             cliente.setEmail(put.email());
         }
-        return cliente;
     }
 
     public List<ClienteGetDTO> toDTOList(List<Cliente> clientes) {

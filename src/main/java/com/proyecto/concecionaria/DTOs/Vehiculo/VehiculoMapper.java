@@ -65,7 +65,7 @@ public class VehiculoMapper {
                 .build();
 
     }
-    public Vehiculo updateEntityFromDTO(VehiculoPutDTO put, Vehiculo vehiculo){
+    public void updateEntityFromDTO(VehiculoPutDTO put, Vehiculo vehiculo){
         if(put.anioModelo() != null){
             vehiculo.setAnioModelo(put.anioModelo());
         }
@@ -93,7 +93,6 @@ public class VehiculoMapper {
         if(put.color() != null){
             vehiculo.setColor(put.color());
         }
-        return vehiculo;
     }
     public List<VehiculoGetDTO> toDTOList(List<Vehiculo> vehiculos){
         return vehiculos.stream().filter(Vehiculo::isActivo).map(this::toDTO).toList();
