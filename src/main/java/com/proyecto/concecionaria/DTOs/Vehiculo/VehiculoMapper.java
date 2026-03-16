@@ -25,7 +25,7 @@ public class VehiculoMapper {
                         detalle.getPrecioUnitario()))
                 .toList();
 
-        VehiculoGetDTO dto = new VehiculoGetDTO(vehiculo.getId(),
+        return new VehiculoGetDTO(vehiculo.getId(),
                 vehiculo.getMarca(),
                 vehiculo.getModelo(),
                 vehiculo.getAnioModelo(),
@@ -38,7 +38,6 @@ public class VehiculoMapper {
                 imagenes,
                 vehiculo.isActivo(),
                 detalles);
-        return dto;
     }
     public Vehiculo toEntity(VehiculoPostDTO post){
         List<Imagen> imagenes = Optional.ofNullable(post.nombresImagenes())

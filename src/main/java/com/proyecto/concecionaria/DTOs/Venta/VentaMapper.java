@@ -26,7 +26,7 @@ public class VentaMapper {
                         pago.getMonto(),
                         pago.getEstado()))
                 .toList();
-        VentaGetDTO dto = new VentaGetDTO(venta.getId(),
+        return new VentaGetDTO(venta.getId(),
                 venta.getFecha(),
                 venta.getFrecuenciaPago(),
                 venta.getTotal(),
@@ -38,8 +38,6 @@ public class VentaMapper {
                 venta.getEntrega(),
                 venta.getEstado(),
                 venta.getCuotas());
-
-        return dto;
     }
 
     public Venta toEntity(VentaPostDTO ventaDTO, Cliente cliente, Usuario empleado) {

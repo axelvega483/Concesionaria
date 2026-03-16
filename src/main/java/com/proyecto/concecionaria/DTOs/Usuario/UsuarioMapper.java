@@ -19,13 +19,12 @@ public class UsuarioMapper {
                         venta.getFecha(),
                         venta.getTotal())).collect(Collectors.toList());
 
-        UsuarioGetDTO dto = new UsuarioGetDTO(usuario.getId(),
+        return new UsuarioGetDTO(usuario.getId(),
                 usuario.getNombre(),
                 usuario.getEmail(),
                 usuario.getDni(),
                 usuario.getRol(),
                 usuario.isActivo(), ventas);
-        return dto;
     }
 
     public Usuario toEntity(UsuarioPostDTO post) {

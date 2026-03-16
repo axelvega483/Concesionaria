@@ -23,7 +23,7 @@ public class ClienteService implements ClienteInterfaz {
 
     @Override
     public ClienteGetDTO crear(ClientePostDTO post) {
-        if(existe(post.dni())){
+        if (existe(post.dni())) {
             throw new IllegalArgumentException("Ya existe un cliente con ese DNI.");
         }
         Cliente cliente = mapper.toEntity(post);
@@ -47,7 +47,7 @@ public class ClienteService implements ClienteInterfaz {
     public ClienteGetDTO actualizar(Integer id, ClientePutDTO put) {
         Cliente cliente = repo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
-        mapper.updateEntityFromDTO(put, cliente);
+        cliente = mapper.updateEntityFromDTO(put, cliente);
         cliente.setActivo(true);
         Cliente actualizado = repo.save(cliente);
         return mapper.toDTO(actualizado);
@@ -63,6 +63,6 @@ public class ClienteService implements ClienteInterfaz {
     }
 
     public Boolean existe(String dni) {
-        return repo.findByDniAndActivo(dni).isPresent();
+        return repo.findByDniAndActivoTrue(dni);
     }
 }

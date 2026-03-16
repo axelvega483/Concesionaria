@@ -73,7 +73,7 @@ public class UsuarioService implements UsuarioInterfaz {
         if (ventas.size() != put.ventasId().size()) {
             throw new IllegalArgumentException("Una o más ventas no fueron encontradas");
         }
-        mapper.fromUpdateDTO(put, usuario, ventas);
+        usuario = mapper.fromUpdateDTO(put, usuario, ventas);
         usuario.setActivo(true);
         if (put.password() != null && !put.password().isEmpty()) {
             usuario.setPassword(passwordEncoder.encode(put.password()));
@@ -84,7 +84,7 @@ public class UsuarioService implements UsuarioInterfaz {
 
     @Override
     public Boolean existe(String dni) {
-        return repo.findByDniAndActivo(dni).isPresent();
+        return repo.findByDniAndActivoTrue(dni);
     }
 
 }

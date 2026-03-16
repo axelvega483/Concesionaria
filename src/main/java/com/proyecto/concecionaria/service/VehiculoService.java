@@ -66,7 +66,7 @@ public class VehiculoService implements VehiculoInterfaz {
     public VehiculoGetDTO actualizar(Integer id, com.proyecto.concecionaria.DTOs.Vehiculo.VehiculoPutDTO put) {
         Vehiculo vehiculo = repo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Vehículo no encontrado"));
-        mapper.updateEntityFromDTO(put, vehiculo);
+        vehiculo = mapper.updateEntityFromDTO(put, vehiculo);
         vehiculo.setActivo(true);
         repo.save(vehiculo);
         return mapper.toDTO(vehiculo);
@@ -75,6 +75,7 @@ public class VehiculoService implements VehiculoInterfaz {
     public Optional<Vehiculo> buscarPorMarcaModeloAnio(String marca, String modelo, Integer anioModelo) {
         return repo.findByMarcaAndModeloAndAnioModelo(marca, modelo, anioModelo);
     }
+
     public Optional<Vehiculo> obtenerEntidad(Integer id) {
         return repo.findById(id).filter(Vehiculo::isActivo);
     }

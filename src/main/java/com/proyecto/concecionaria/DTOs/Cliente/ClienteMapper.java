@@ -18,12 +18,12 @@ public class ClienteMapper {
                         venta.getFecha(),
                         venta.getTotal())).toList();
 
-        ClienteGetDTO dto = new ClienteGetDTO(cliente.getId(),
+        return new ClienteGetDTO(cliente.getId(),
                 cliente.getNombre(),
                 cliente.getEmail(),
                 cliente.getDni(),
                 cliente.isActivo(), ventas);
-        return dto;
+
     }
 
     public Cliente toEntity(ClientePostDTO post) {
