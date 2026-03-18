@@ -3,7 +3,7 @@ package com.proyecto.concecionaria.controller;
 import com.proyecto.concecionaria.DTOs.Venta.VentaGetDTO;
 import com.proyecto.concecionaria.DTOs.Venta.VentaPostDTO;
 import com.proyecto.concecionaria.interfaz.VentaInterfaz;
-import com.proyecto.concecionaria.util.CustomApiResponse;
+import com.proyecto.concecionaria.util.ApiRespons;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -41,7 +41,7 @@ public class VentaController {
     @GetMapping
     public ResponseEntity<?> findAll() {
         List<VentaGetDTO> dto = ventaService.listar();
-        return new ResponseEntity<>(new CustomApiResponse<>("Listado de ventas obtenido correctamente", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Listado de ventas obtenido correctamente", dto), HttpStatus.OK);
     }
 
     @Operation(summary = "Obtener venta por ID", description = "Busca una venta específica por su ID")
@@ -50,9 +50,9 @@ public class VentaController {
     public ResponseEntity<?> findById(@Parameter(description = "ID de la venta a buscar", example = "1", required = true) @PathVariable Integer id) {
         Optional<VentaGetDTO> dto = ventaService.obtener(id);
         if (dto.isPresent()) {
-            return new ResponseEntity<>(new CustomApiResponse<>("Venta encontrada", dto.get(), true), HttpStatus.OK);
+            return new ResponseEntity<>(ApiRespons.ok("Venta encontrada", dto.get()), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new CustomApiResponse<>("Venta no encontrada", null, false), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ApiRespons.error("Venta no encontrada"), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -61,7 +61,7 @@ public class VentaController {
     @PostMapping
     public ResponseEntity<?> create(@Parameter(description = "Datos de la venta a crear", required = true) @Valid @RequestBody VentaPostDTO ventaDTO) {
         VentaGetDTO dto = ventaService.crear(ventaDTO);
-        return new ResponseEntity<>(new CustomApiResponse<>("Venta creada exitosamente", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Venta creada exitosamente", dto), HttpStatus.OK);
     }
 
     @Operation(summary = "Eliminar venta", description = "Elimina (desactiva) una venta del sistema")
@@ -69,6 +69,6 @@ public class VentaController {
     @DeleteMapping("{id}")
     public ResponseEntity<?> delete(@Parameter(description = "ID de la venta a eliminar", example = "1", required = true) @PathVariable Integer id) {
         VentaGetDTO dto = ventaService.cancelar(id);
-        return new ResponseEntity<>(new CustomApiResponse<>("Venta dada de baja exitosamente", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Venta dada de baja exitosamente", dto), HttpStatus.OK);
     }
 }

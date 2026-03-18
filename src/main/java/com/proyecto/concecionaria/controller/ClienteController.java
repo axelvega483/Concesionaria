@@ -4,7 +4,7 @@ import com.proyecto.concecionaria.DTOs.Cliente.ClienteGetDTO;
 import com.proyecto.concecionaria.DTOs.Cliente.ClientePostDTO;
 import com.proyecto.concecionaria.DTOs.Cliente.ClientePutDTO;
 import com.proyecto.concecionaria.interfaz.ClienteInterfaz;
-import com.proyecto.concecionaria.util.CustomApiResponse;
+import com.proyecto.concecionaria.util.ApiRespons;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -43,7 +43,7 @@ public class ClienteController {
     @GetMapping
     public ResponseEntity<?> listarCliente() {
         List<ClienteGetDTO> dto = clienteService.listar();
-        return new ResponseEntity<>(new CustomApiResponse<>("Lista de Clientes", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Lista de Clientes", dto), HttpStatus.OK);
     }
 
     @Operation(summary = "Obtener cliente por ID", description = "Devuelve un cliente específico basado en su ID")
@@ -58,9 +58,9 @@ public class ClienteController {
             @PathVariable Integer id) {
         ClienteGetDTO dto = clienteService.obtener(id).orElse(null);
         if (dto != null) {
-            return new ResponseEntity<>(new CustomApiResponse<>("Cliente encontrado", dto, true), HttpStatus.OK);
+            return new ResponseEntity<>(ApiRespons.ok("Cliente encontrado", dto), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new CustomApiResponse<>("Cliente no encontrado", null, false), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ApiRespons.error("Cliente no encontrado"), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -75,7 +75,7 @@ public class ClienteController {
             @Parameter(description = "Datos del cliente a crear", required = true)
             @Valid @RequestBody ClientePostDTO clienteDTO) {
         ClienteGetDTO dto = clienteService.crear(clienteDTO);
-        return new ResponseEntity<>(new CustomApiResponse<>("Cliente creado", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Cliente creado", dto), HttpStatus.OK);
     }
 
     @Operation(summary = "Actualizar cliente existente", description = "Actualiza la información de un cliente existente")
@@ -92,7 +92,7 @@ public class ClienteController {
             @Parameter(description = "Datos actualizados del cliente", required = true)
             @RequestBody ClientePutDTO clienteDTO) {
         ClienteGetDTO dto = clienteService.actualizar(id, clienteDTO);
-        return new ResponseEntity<>(new CustomApiResponse<>("Cliente actualizado", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Cliente actualizado", dto), HttpStatus.OK);
     }
 
     @Operation(summary = "Eliminar cliente", description = "Elimina un cliente del sistema basado en su ID")
@@ -106,6 +106,6 @@ public class ClienteController {
             @Parameter(description = "ID del cliente a eliminar", example = "1", required = true)
             @PathVariable Integer id) {
         ClienteGetDTO dto = clienteService.eliminar(id);
-        return new ResponseEntity<>(new CustomApiResponse<>("Cliente eliminado", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Cliente eliminado", dto), HttpStatus.OK);
     }
 }

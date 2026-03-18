@@ -1,6 +1,6 @@
 package com.proyecto.concecionaria.DTOs.Usuario;
 
-import com.proyecto.concecionaria.util.RolEmpleado;
+import com.proyecto.concecionaria.util.RolUsuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 
@@ -23,6 +23,6 @@ public record UsuarioPostDTO(@Size(min = 2, max = 50, message = "El nombre debe 
                              @NotNull(message = "El dni no puede estar vacío")
                              String dni,
                              @NotNull(message = "El rol no puede estar vacío")
-                             RolEmpleado rol) {
+                             RolUsuario rol) {
 
 }

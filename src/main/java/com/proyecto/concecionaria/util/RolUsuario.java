@@ -1,6 +1,6 @@
 package com.proyecto.concecionaria.util;
 
-public enum RolEmpleado {
+public enum RolUsuario {
     ADMIN,
     EMPLEADO
 }

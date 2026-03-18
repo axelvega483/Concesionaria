@@ -3,7 +3,7 @@ package com.proyecto.concecionaria.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.proyecto.concecionaria.util.RolEmpleado;
+import com.proyecto.concecionaria.util.RolUsuario;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -60,7 +60,7 @@ public class Usuario implements Serializable, UserDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "rol", nullable = false)
-    private RolEmpleado rol;
+    private RolUsuario rol;
 
     private boolean activo;
 

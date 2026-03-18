@@ -5,7 +5,7 @@ import com.proyecto.concecionaria.DTOs.Pagos.PagosPutDTO;
 import com.proyecto.concecionaria.entity.Pagos;
 import com.proyecto.concecionaria.interfaz.PagosInterfaz;
 import com.proyecto.concecionaria.service.PdfPagoService;
-import com.proyecto.concecionaria.util.CustomApiResponse;
+import com.proyecto.concecionaria.util.ApiRespons;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,7 +48,7 @@ public class PagosController {
     @GetMapping
     public ResponseEntity<?> listarPagos() {
         List<PagosGetDTO> dto = pagosService.findByAll();
-        return new ResponseEntity<>(new CustomApiResponse<>("Listado de pagos obtenido correctamente", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Listado de pagos obtenido correctamente", dto), HttpStatus.OK);
     }
 
     @Operation(summary = "Obtener pago por ID", description = "Busca un pago específico por su ID")
@@ -57,9 +57,9 @@ public class PagosController {
     public ResponseEntity<?> obtenerPago(@Parameter(description = "ID del pago a buscar", example = "1", required = true) @PathVariable Integer id) {
         Optional<PagosGetDTO> dto = pagosService.findById(id);
         if (dto.isPresent()) {
-            return new ResponseEntity<>(new CustomApiResponse<>("Pago encontrado", dto.get(), true), HttpStatus.OK);
+            return new ResponseEntity<>(ApiRespons.ok("Pago encontrado", dto.get()), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new CustomApiResponse<>("Pago no encontrado", null, false), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ApiRespons.error("Pago no encontrado"), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -68,7 +68,7 @@ public class PagosController {
     @PutMapping("/confirmar/{id}")
     public ResponseEntity<?> confirmarPago(@Parameter(description = "ID del pago a confirmar", example = "1", required = true) @PathVariable Integer id, @Parameter(description = "Datos de confirmación del pago", required = true) @RequestBody PagosPutDTO putDTO) {
         PagosGetDTO dto = pagosService.confirmarPago(id, putDTO);
-        return new ResponseEntity<>(new CustomApiResponse<>("Pago confirmado exitosamente", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Pago confirmado exitosamente", dto), HttpStatus.OK);
     }
 
     @Operation(summary = "Cancelar pago", description = "Cancela un pago existente y lo marca como inactivo")
@@ -76,7 +76,7 @@ public class PagosController {
     @DeleteMapping("{id}")
     public ResponseEntity<?> cancelarPago(@Parameter(description = "ID del pago a cancelar", example = "1", required = true) @PathVariable Integer id) {
         PagosGetDTO dto = pagosService.cancelar(id);
-        return new ResponseEntity<>(new CustomApiResponse<>("Pago cancelado exitosamente", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Pago cancelado exitosamente", dto), HttpStatus.OK);
     }
 
     @Operation(summary = "Descargar ticket de pago", description = "Genera y descarga el ticket de pago en formato PDF")

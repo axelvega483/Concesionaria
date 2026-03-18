@@ -3,6 +3,7 @@ package com.proyecto.concecionaria.interfaz;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioGetDTO;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioPostDTO;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioPutDTO;
+import com.proyecto.concecionaria.DTOs.Usuario.UsuarioRolDTO;
 import com.proyecto.concecionaria.entity.Usuario;
 
 import java.util.List;
@@ -19,6 +20,8 @@ public interface UsuarioInterfaz {
     List<UsuarioGetDTO> listar();
 
     UsuarioGetDTO actualizar(Integer id, UsuarioPutDTO put);
+
+    UsuarioGetDTO actualizarRol(Integer id, UsuarioRolDTO put);
 
     UsuarioGetDTO eliminar(Integer id);
 

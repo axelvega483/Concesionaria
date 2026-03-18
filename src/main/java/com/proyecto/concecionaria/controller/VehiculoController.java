@@ -7,7 +7,7 @@ import com.proyecto.concecionaria.entity.Imagen;
 import com.proyecto.concecionaria.entity.Vehiculo;
 import com.proyecto.concecionaria.interfaz.ImagenIntefaz;
 import com.proyecto.concecionaria.interfaz.VehiculoInterfaz;
-import com.proyecto.concecionaria.util.CustomApiResponse;
+import com.proyecto.concecionaria.util.ApiRespons;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -51,7 +51,7 @@ public class VehiculoController {
     @GetMapping
     public ResponseEntity<?> findAll() {
         List<VehiculoGetDTO> dto = vehiculoService.listar();
-        return new ResponseEntity<>(new CustomApiResponse<>("Listado de vehículos obtenido correctamente", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Listado de vehículos obtenido correctamente", dto), HttpStatus.OK);
     }
 
     @Operation(summary = "Obtener vehículo por ID", description = "Busca un vehículo específico por su ID")
@@ -60,9 +60,9 @@ public class VehiculoController {
     public ResponseEntity<?> findById(@Parameter(description = "ID del vehículo a buscar", example = "1", required = true) @PathVariable Integer id) {
         Optional<VehiculoGetDTO> dto = vehiculoService.obtener(id);
         if (dto.isPresent()) {
-            return new ResponseEntity<>(new CustomApiResponse<>("Vehículo encontrado", dto.get(), true), HttpStatus.OK);
+            return new ResponseEntity<>(ApiRespons.ok("Vehículo encontrado", dto.get()), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new CustomApiResponse<>("Vehículo no encontrado", null, false), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ApiRespons.error("Vehículo no encontrado"), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -98,7 +98,7 @@ public class VehiculoController {
     @PostMapping
     public ResponseEntity<?> create(@Parameter(description = "Datos del vehículo a crear", required = true) @Valid @RequestBody VehiculoPostDTO vehiculoDTO) {
         VehiculoGetDTO dto = vehiculoService.crear(vehiculoDTO);
-        return new ResponseEntity<>(new CustomApiResponse<>("Vehículo procesado exitosamente", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Vehículo procesado exitosamente", dto), HttpStatus.OK);
     }
 
     @Operation(summary = "Subir imágenes para vehículo", description = "Sube una o múltiples imágenes para un vehículo específico")
@@ -108,7 +108,7 @@ public class VehiculoController {
 
         Optional<Vehiculo> optional = vehiculoService.obtenerEntidad(idVehiculo);
         if (optional.isEmpty()) {
-            return new ResponseEntity<>(new CustomApiResponse<>("Vehículo no encontrado", null, false), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ApiRespons.error("Vehículo no encontrado"), HttpStatus.NOT_FOUND);
         }
 
         Vehiculo vehiculo = optional.get();
@@ -129,7 +129,7 @@ public class VehiculoController {
         for (MultipartFile archivo : imagenes) {
             String extension = FilenameUtils.getExtension(archivo.getOriginalFilename()).toLowerCase();
             if (!extensionesPermitidas.contains(extension)) {
-                return new ResponseEntity<>(new CustomApiResponse<>("Formato de imagen no permitido: " + extension, null, false), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(ApiRespons.error("Formato de imagen no permitido: " + extension), HttpStatus.BAD_REQUEST);
             }
 
             String nombre = UUID.randomUUID() + "_" + archivo.getOriginalFilename();
@@ -143,7 +143,7 @@ public class VehiculoController {
         }
 
         VehiculoGetDTO dto = vehiculoService.guardar(vehiculo);
-        return new ResponseEntity<>(new CustomApiResponse<>("Imágenes subidas correctamente", dto, true), HttpStatus.CREATED);
+        return new ResponseEntity<>(ApiRespons.ok("Imágenes subidas correctamente", dto), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Actualizar vehículo", description = "Actualiza la información de un vehículo existente")
@@ -151,7 +151,7 @@ public class VehiculoController {
     @PutMapping("{id}")
     public ResponseEntity<?> update(@Parameter(description = "ID del vehículo a actualizar", example = "1", required = true) @PathVariable Integer id, @Parameter(description = "Datos actualizados del vehículo", required = true) @RequestBody VehiculoPutDTO vehiculoDTO) {
         VehiculoGetDTO dto = vehiculoService.actualizar(id, vehiculoDTO);
-        return new ResponseEntity<>(new CustomApiResponse<>("Vehículo actualizado exitosamente", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Vehículo actualizado exitosamente", dto), HttpStatus.OK);
     }
 
     @Operation(summary = "Eliminar vehículo", description = "Elimina (desactiva) un vehículo del sistema")
@@ -159,7 +159,7 @@ public class VehiculoController {
     @DeleteMapping("{id}")
     public ResponseEntity<?> delete(@Parameter(description = "ID del vehículo a eliminar", example = "1", required = true) @PathVariable Integer id) {
         VehiculoGetDTO dto = vehiculoService.eliminar(id);
-        return new ResponseEntity<>(new CustomApiResponse<>("Vehículo eliminado exitosamente", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Vehículo eliminado exitosamente", dto), HttpStatus.OK);
     }
 
     @Operation(summary = "Eliminar imagen de vehículo", description = "Elimina una imagen específica de un vehículo")
@@ -169,14 +169,14 @@ public class VehiculoController {
 
         Optional<Vehiculo> optionalVehiculo = vehiculoService.obtenerEntidad(idVehiculo);
         if (optionalVehiculo.isEmpty()) {
-            return new ResponseEntity<>(new CustomApiResponse<>("Vehículo no encontrado", null, false), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ApiRespons.error("Vehículo no encontrado"), HttpStatus.NOT_FOUND);
         }
 
         Vehiculo vehiculo = optionalVehiculo.get();
         Imagen imagen = vehiculo.getImagenes().stream().filter(img -> img.getId().equals(idImagen)).findFirst().orElse(null);
 
         if (imagen == null) {
-            return new ResponseEntity<>(new CustomApiResponse<>("Imagen no encontrada en este vehículo", null, false), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ApiRespons.error("Imagen no encontrada en este vehículo"), HttpStatus.NOT_FOUND);
         }
 
 
@@ -186,7 +186,7 @@ public class VehiculoController {
         vehiculo.getImagenes().remove(imagen);
         VehiculoGetDTO dto = vehiculoService.guardar(vehiculo);
 
-        return new ResponseEntity<>(new CustomApiResponse<>("Imagen eliminada con éxito", dto, true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiRespons.ok("Imagen eliminada con éxito", dto), HttpStatus.OK);
     }
 
 }

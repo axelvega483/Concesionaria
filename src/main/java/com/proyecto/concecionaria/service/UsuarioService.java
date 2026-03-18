@@ -3,6 +3,7 @@ package com.proyecto.concecionaria.service;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioGetDTO;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioMapper;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioPostDTO;
+import com.proyecto.concecionaria.DTOs.Usuario.UsuarioRolDTO;
 import com.proyecto.concecionaria.entity.Usuario;
 import com.proyecto.concecionaria.entity.Venta;
 import com.proyecto.concecionaria.interfaz.UsuarioInterfaz;
@@ -12,7 +13,10 @@ import java.util.List;
 import java.util.Optional;
 
 import com.proyecto.concecionaria.repository.VentaRepository;
+import com.proyecto.concecionaria.util.RolUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -81,6 +85,37 @@ public class UsuarioService implements UsuarioInterfaz {
         repo.save(usuario);
         return mapper.toDTO(usuario);
     }
+
+    @Override
+    public UsuarioGetDTO actualizarRol(Integer id, UsuarioRolDTO dto) {
+        if (dto.rol() == null) {
+            throw new IllegalArgumentException("El rol es obligatorio");
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+
+        Usuario usuarioLogueado = repo.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Usuario autenticado no encontrado"));
+        if (usuarioLogueado.getId().equals(id)) {
+            throw new IllegalStateException("No podés cambiar tu propio rol");
+        }
+        Usuario usuario = repo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        if (usuario.getRol() == RolUsuario.ADMIN && dto.rol() != RolUsuario.ADMIN) {
+            long admins = repo.countByRol(RolUsuario.ADMIN);
+            if (admins <= 1) {
+                throw new IllegalStateException("Debe existir al menos un ADMIN");
+            }
+        }
+
+        usuario.setRol(dto.rol());
+        repo.save(usuario);
+
+        return mapper.toDTO(usuario);
+    }
+
 
     @Override
     public Boolean existe(String dni) {

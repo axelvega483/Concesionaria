@@ -3,7 +3,7 @@ package com.proyecto.concecionaria;
 import com.proyecto.concecionaria.DTOs.Usuario.UsuarioGetDTO;
 import com.proyecto.concecionaria.entity.Usuario;
 import com.proyecto.concecionaria.interfaz.UsuarioInterfaz;
-import com.proyecto.concecionaria.util.RolEmpleado;
+import com.proyecto.concecionaria.util.RolUsuario;
 import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -24,7 +24,7 @@ public class ConcecionariaApplication {
             List<UsuarioGetDTO> usuarios = usuarioService.listar();
             if (usuarios.isEmpty()) {
                 Usuario usuarioADMIN = new Usuario();
-                usuarioADMIN.setRol(RolEmpleado.ADMIN);
+                usuarioADMIN.setRol(RolUsuario.ADMIN);
                 usuarioADMIN.setNombre("ADMIN");
                 usuarioADMIN.setPassword("admin");
                 usuarioADMIN.setEmail("admin@admin.com");
